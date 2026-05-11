@@ -8,44 +8,152 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
 
     body {
       font-family: 'Montserrat', sans-serif;
-      font-size: 13px;
+      font-size: 11px;
       color: #2C3E50;
       background: #fff;
-      padding: 40px 50px;
+      padding: 32px 40px;
     }
 
-    h1 { font-size: 36px; font-weight: 700; color: #00205B; margin-bottom: 8px; }
-    h2 { font-size: 24px; font-weight: 700; color: #00205B; margin: 24px 0 12px; }
-    h3 { font-size: 18px; font-weight: 600; color: #1862BC; margin: 16px 0 8px; }
-    p  { line-height: 1.6; margin-bottom: 12px; }
+    /* ── CABEÇALHO full-width ── */
+    .ficha-header { width: 100%; margin-bottom: 16px; }
 
-    ul { list-style: none; padding: 0; margin-bottom: 12px; }
-    ul li::before { content: "• "; color: #01CFAB; font-weight: bold; }
-    ul li { margin-bottom: 6px; padding-left: 16px; }
+    .ficha-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #00205B;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
 
-    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-    th { background: #00205B; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; }
-    td { padding: 8px 12px; border: 1px solid #ccc; font-size: 12px; }
-    tr:nth-child(even) td { background: #F5F7FA; }
+    .ficha-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1862BC;
+      margin-bottom: 10px;
+    }
 
+    .ficha-meta {
+      font-size: 10px;
+      color: #6B7684;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+
+    /* ── CONTEÚDO em 2 COLUNAS (estilo revista) ── */
+    .ficha-colunas {
+      column-count: 2;
+      column-gap: 20px;
+      column-rule: 1px solid #e5e5e5;
+      width: 100%;
+    }
+
+    /* H2 dentro das colunas = título de seção → ocupa largura TOTAL */
+    .ficha-colunas h2 {
+      column-span: all;
+      font-size: 15px;
+      font-weight: 700;
+      color: #00205B;
+      margin: 18px 0 10px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #01CFAB;
+    }
+
+    /* H3 = subseção dentro das colunas */
+    .ficha-colunas h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1862BC;
+      margin: 12px 0 6px;
+      break-after: avoid;
+    }
+
+    .ficha-colunas p {
+      font-size: 11px;
+      line-height: 1.55;
+      margin-bottom: 8px;
+      text-align: justify;
+    }
+
+    .ficha-colunas ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 8px;
+    }
+    .ficha-colunas ul li {
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 4px;
+      padding-left: 14px;
+      position: relative;
+    }
+    .ficha-colunas ul li::before {
+      content: "•";
+      color: #01CFAB;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    /* Tabelas ocupam a coluna inteira */
+    .ficha-colunas table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      break-inside: avoid;
+      font-size: 10px;
+    }
+    .ficha-colunas th {
+      background: #00205B;
+      color: #fff;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    .ficha-colunas td {
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+    }
+    .ficha-colunas tr:nth-child(even) td { background: #F5F7FA; }
+
+    /* Callout */
     .callout {
       background: #F5F7FA;
-      border-left: 4px solid #01CFAB;
-      padding: 16px 20px;
-      margin-bottom: 16px;
+      border-left: 3px solid #01CFAB;
+      padding: 10px 14px;
+      margin-bottom: 10px;
       border-radius: 4px;
+      break-inside: avoid;
+      font-size: 11px;
     }
-    .callout-aviso  { border-color: #FFC107; background: #fffbeb; }
+    .callout-aviso   { border-color: #FFC107; background: #fffbeb; }
     .callout-critico { border-color: #DC3545; background: #fff5f5; }
-    .callout-titulo { font-weight: 700; color: #00205B; margin-bottom: 6px; }
+    .callout-titulo  { font-weight: 700; color: #00205B; margin-bottom: 4px; font-size: 11px; }
 
-    img { max-width: 100%; border-radius: 4px; border: 1px solid #ccc; }
-    figcaption { text-align: center; font-size: 11px; color: #6B7684; margin-top: 6px; }
+    /* Imagens */
+    .ficha-colunas img {
+      max-width: 100%;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      break-inside: avoid;
+    }
+    .ficha-colunas figcaption {
+      text-align: center;
+      font-size: 10px;
+      color: #6B7684;
+      margin-top: 4px;
+    }
 
-    .ficha-meta { font-size: 11px; color: #6B7684; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 20px; }
-    .ficha-footer { font-size: 11px; color: #6B7684; text-align: center; border-top: 1px solid #eee; padding-top: 12px; margin-top: 32px; }
+    .ficha-footer {
+      column-span: all;
+      font-size: 10px;
+      color: #6B7684;
+      text-align: center;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+      margin-top: 20px;
+    }
 
-    @page { margin: 20mm; size: A4; }
+    @page { margin: 15mm 18mm; size: A4 portrait; }
     @media print { body { padding: 0; } }
   `;
 
@@ -116,15 +224,19 @@ function gerarHTMLFicha(ficha: Ficha): string {
   }).join('\n');
 
   return `
-    <h1>${esc(ficha.titulo)}</h1>
-    ${ficha.subtitulo ? `<h2 style="color:#1862BC;margin-top:4px">${esc(ficha.subtitulo)}</h2>` : ''}
-    <div class="ficha-meta">
-      Tipo: ${ficha.metadados.tipo} &nbsp;|&nbsp;
-      Criado em: ${new Date(ficha.metadados.criado).toLocaleDateString('pt-BR')}
+    <div class="ficha-header">
+      <h1>${esc(ficha.titulo)}</h1>
+      ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
+      <div class="ficha-meta">
+        Tipo: ${ficha.metadados.tipo} &nbsp;|&nbsp;
+        Criado em: ${new Date(ficha.metadados.criado).toLocaleDateString('pt-BR')}
+      </div>
     </div>
-    ${secoes}
-    <div class="ficha-footer">
-      Medway Fichas &nbsp;•&nbsp; Medway Design System v1.0 &nbsp;•&nbsp; © ${new Date().getFullYear()}
+    <div class="ficha-colunas">
+      ${secoes}
+      <div class="ficha-footer">
+        Medway Fichas &nbsp;•&nbsp; Medway Design System v1.0 &nbsp;•&nbsp; © ${new Date().getFullYear()}
+      </div>
     </div>
   `;
 }
