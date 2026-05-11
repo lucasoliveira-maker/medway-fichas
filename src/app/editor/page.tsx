@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useFicha } from '@/hooks/useFicha';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { FormularioFicha } from '@/components/Editor/FormularioFicha';
@@ -17,9 +17,7 @@ export default function EditorPage() {
   const [validation, setValidation] = useState(validarFichaMedway(ficha));
   const [view, setView] = useState<'form' | 'preview'>('form');
   const [exporting, setExporting] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
 
-  // Update validation whenever ficha changes
   React.useEffect(() => {
     setValidation(validarFichaMedway(ficha));
   }, [ficha]);
@@ -39,15 +37,12 @@ export default function EditorPage() {
   };
 
   const handleExportPDF = async () => {
-    if (!previewRef.current) return;
-
     try {
       setExporting(true);
-      await exportarFichaPDF(ficha, previewRef.current);
-      alert('PDF exportado com sucesso!');
-    } catch (error) {
+      await exportarFichaPDF(ficha, document.body);
+    } catch (error: any) {
       console.error(error);
-      alert('Erro ao exportar PDF');
+      alert(error?.message || 'Erro ao exportar PDF');
     } finally {
       setExporting(false);
     }
@@ -131,9 +126,7 @@ export default function EditorPage() {
           {/* Preview (Direita) */}
           <div className={`${view !== 'preview' && 'md:block hidden'}`}>
             <div className="bg-white rounded-md shadow-medway p-8 overflow-y-auto max-h-[calc(100vh-200px)]">
-              <div ref={previewRef}>
-                <FichaRenderer ficha={ficha} preview />
-              </div>
+              <FichaRenderer ficha={ficha} preview />
             </div>
           </div>
         </div>
