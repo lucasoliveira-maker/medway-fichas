@@ -1,68 +1,78 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
-@import '../styles/medway-design.css';
 @import "tailwindcss";
 
-/* Reset & Base Styles */
+/* ─── Medway Design System — Tailwind v4 Theme ─── */
+@theme {
+  /* Cores Primárias */
+  --color-medway-primary: #01CFAB;
+  --color-medway-secondary: #1862BC;
+  --color-medway-dark: #00205B;
+
+  /* Cores Neutras */
+  --color-medway-white: #FFFFFF;
+  --color-medway-light: #F5F7FA;
+  --color-medway-gray: #6B7684;
+  --color-medway-text: #2C3E50;
+
+  /* Cores Semânticas */
+  --color-medway-success: #28A745;
+  --color-medway-error: #DC3545;
+  --color-medway-warning: #FFC107;
+  --color-medway-info: #0C5CE6;
+
+  /* Tipografia */
+  --font-montserrat: 'Montserrat', sans-serif;
+
+  /* Font Sizes */
+  --text-h1: 72px;
+  --text-h2: 48px;
+  --text-h3: 32px;
+  --text-body: 16px;
+
+  /* Sombras */
+  --shadow-medway: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-medway-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}
+
+/* ─── Base Styles ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html {
   font-family: var(--font-montserrat);
-  background-color: var(--medway-white);
-  color: var(--medway-text);
+  background-color: var(--color-medway-white);
+  color: var(--color-medway-text);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--medway-white);
-  color: var(--medway-text);
+  background-color: var(--color-medway-white);
+  color: var(--color-medway-text);
   font-family: var(--font-montserrat);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-/* Typography */
-h1 {
-  font-size: var(--h1-size);
-  font-weight: var(--h1-weight);
-  color: var(--medway-dark);
-  margin: 0;
-  line-height: 1.2;
-}
-
-h2 {
-  font-size: var(--h2-size);
-  font-weight: var(--h2-weight);
-  color: var(--medway-dark);
-  margin: 0;
-  line-height: 1.3;
-}
-
-h3 {
-  font-size: var(--h3-size);
-  font-weight: var(--h3-weight);
-  color: var(--medway-secondary);
-  margin: 0;
-  line-height: 1.4;
-}
-
-p {
-  font-size: var(--body-size);
-  font-weight: var(--body-weight);
-  color: var(--medway-text);
-  line-height: var(--body-line-height);
-  margin: 0;
+button {
+  font-family: var(--font-montserrat);
 }
 
 a {
-  color: var(--medway-primary);
+  color: var(--color-medway-primary);
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
-}
-
-button {
-  font-family: var(--font-montserrat);
 }
