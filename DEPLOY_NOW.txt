@@ -1,0 +1,100 @@
+═══════════════════════════════════════════════════════════════════
+  MEDWAY FICHAS - GUIA RÁPIDO DE DEPLOY NO VERCEL
+═══════════════════════════════════════════════════════════════════
+
+Seu código está PRONTO para ir ao ar! Siga estes 3 passos simples:
+
+═══════════════════════════════════════════════════════════════════
+PASSO 1: CRIAR REPOSITÓRIO NO GITHUB
+═══════════════════════════════════════════════════════════════════
+
+URL: https://github.com/new
+
+1. Nome do repo: medway-fichas
+2. Descrição: Plataforma de geração de fichas de educação médica
+3. Escolha: Public (mais fácil)
+4. Clique: "Create repository"
+
+Copie o URL de push (algo como):
+https://github.com/seu-usuario/medway-fichas.git
+
+═══════════════════════════════════════════════════════════════════
+PASSO 2: FAZER PUSH DO CÓDIGO PARA GITHUB
+═══════════════════════════════════════════════════════════════════
+
+Execute no PowerShell (na pasta medway-fichas):
+
+  git remote add origin https://github.com/seu-usuario/medway-fichas.git
+  git branch -M main
+  git push -u origin main
+
+(Troque "seu-usuario" pelo seu username do GitHub)
+
+═══════════════════════════════════════════════════════════════════
+PASSO 3: DEPLOY AUTOMÁTICO NO VERCEL
+═══════════════════════════════════════════════════════════════════
+
+URL: https://vercel.com/dashboard
+
+1. Faça login com sua conta GitHub (ou crie)
+2. Clique em "Add New..." → "Project"
+3. Clique em "Import Git Repository"
+4. Procure e clique em "medway-fichas"
+5. Vercel detectará tudo automaticamente!
+6. Clique em "Deploy"
+
+ESPERE 30-60 SEGUNDOS...
+
+✅ PRONTO! Seu site estará em:
+   https://medway-fichas.vercel.app
+
+═══════════════════════════════════════════════════════════════════
+VERIFICAR DEPLOY
+═══════════════════════════════════════════════════════════════════
+
+1. Abra https://medway-fichas.vercel.app
+2. Você verá o Dashboard com "Criar Nova Ficha"
+3. Clique em "Criar Nova Ficha"
+4. Teste o editor:
+   - Preencha título
+   - Adicione seções
+   - Veja preview em tempo real
+   - Clique em "📄 PDF" para exportar
+   - Clique em "💾 Salvar"
+
+═══════════════════════════════════════════════════════════════════
+REDEPLOY AUTOMÁTICO
+═══════════════════════════════════════════════════════════════════
+
+Sempre que você fizer `git push origin main`:
+  → GitHub avisa Vercel
+  → Vercel refaz build
+  → Seu site atualiza automaticamente em ~30s
+
+NÃO PRECISA FAZER NADA MANUALMENTE!
+
+═══════════════════════════════════════════════════════════════════
+DÚVIDAS?
+═══════════════════════════════════════════════════════════════════
+
+Ver arquivo: DEPLOYMENT.md (guia completo com troubleshooting)
+Ver arquivo: README.md (funcionalidades e estrutura)
+
+═══════════════════════════════════════════════════════════════════
+STATUS DO MVP
+═══════════════════════════════════════════════════════════════════
+
+✅ Setup Next.js 14 + TypeScript
+✅ Medway Design System completo
+✅ Editor com 7 tipos de seção
+✅ Preview em tempo real
+✅ Validador automático
+✅ Exportação PDF
+✅ Dashboard com CRUD
+✅ localStorage (offline-first)
+✅ Build otimizado
+✅ Pronto para Vercel
+
+🚀 100% DO MVP COMPLETO!
+
+═══════════════════════════════════════════════════════════════════
