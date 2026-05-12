@@ -95,6 +95,24 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       left: 0;
     }
 
+    /* Rich text dentro de parágrafos */
+    .ficha-colunas p strong { font-weight: 700; }
+    .ficha-colunas p em { font-style: italic; }
+    .ficha-colunas p u { text-decoration: underline; }
+    .ficha-colunas p s { text-decoration: line-through; }
+    .ficha-colunas p a { color: #1862BC; text-decoration: underline; }
+    .ficha-colunas p code {
+      background: #f0f0f0;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 0.88em;
+    }
+    .ficha-colunas p ul, .ficha-colunas p ol {
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+
     /* Tabelas ocupam a coluna inteira */
     .ficha-colunas table {
       width: 100%;
@@ -197,7 +215,8 @@ function gerarHTMLFicha(ficha: Ficha): string {
       return `<h3>${esc(secao.titulo)}</h3>`;
     }
     if (secao.tipo === 'paragrafo') {
-      return `<p>${esc(secao.conteudo)}</p>`;
+      /* conteudo pode ser HTML rico — inserir diretamente sem escapar */
+      return `<p>${secao.conteudo || ''}</p>`;
     }
     if (secao.tipo === 'lista' && secao.itens) {
       const itens = secao.itens.map((i) => `<li>${esc(i)}</li>`).join('');

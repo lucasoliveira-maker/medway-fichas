@@ -3,6 +3,7 @@
 import React from 'react';
 import { Ficha, Secao, SecaoTipo } from '@/types/ficha.types';
 import { Heading } from '@/components/Medway/Heading';
+import { RichTextEditor } from './RichTextEditor';
 
 interface FormularioFichaProps {
   ficha: Ficha;
@@ -131,12 +132,11 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
           <label className="text-sm font-semibold text-medway-dark block mb-1">
             Texto
           </label>
-          <textarea
+          <RichTextEditor
             value={secao.conteudo || ''}
-            onChange={(e) => onUpdate({ conteudo: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
-            rows={3}
-            placeholder="Digite o parágrafo"
+            onChange={(html) => onUpdate({ conteudo: html })}
+            placeholder="Digite o parágrafo..."
+            minRows={4}
           />
         </div>
       )}
