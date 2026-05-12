@@ -47,7 +47,6 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       column-rule: 1px solid #e5e5e5;
       width: 100%;
       font-size: 11px;
-      overflow: hidden; /* impede overflow horizontal entre colunas */
     }
 
     /* H2 dentro das colunas = título de seção → ocupa largura TOTAL */
@@ -70,7 +69,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       break-after: avoid;
     }
 
-    /* Parágrafo rico: wrapper controla layout; descendentes herdam fonte */
+    /* Parágrafo rico */
     .ficha-colunas .para {
       font-size: 11px !important;
       line-height: 1.55;
@@ -78,15 +77,13 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       text-align: justify;
       hyphens: auto;
       -webkit-hyphens: auto;
-      overflow-wrap: break-word;
+      overflow-wrap: anywhere;
       word-break: break-word;
-      max-width: 100%;
     }
-    /* descendentes: herdam tamanho, sem redefinir layout */
+    /* descendentes herdam fonte sem redefinir propriedades de layout */
     .ficha-colunas .para * {
       font-size: inherit !important;
       line-height: inherit;
-      max-width: 100%;
     }
     .ficha-colunas .para p,
     .ficha-colunas .para div { margin-bottom: 4px; }
