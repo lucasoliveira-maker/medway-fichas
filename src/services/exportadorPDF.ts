@@ -68,8 +68,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       break-after: avoid;
     }
 
-    /* .para — wrapper do parágrafo (div evita HTML inválido com blocos internos) */
-    .ficha-colunas .para {
+    .ficha-colunas p {
       font-size: 11px;
       line-height: 1.55;
       margin-bottom: 8px;
@@ -77,24 +76,6 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       hyphens: auto;
       -webkit-hyphens: auto;
       overflow-wrap: break-word;
-      word-break: break-word;
-      overflow: hidden;        /* impede transbordo além da coluna */
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-    /* filhos herdam tamanho e ficam contidos */
-    .ficha-colunas .para p,
-    .ficha-colunas .para div,
-    .ficha-colunas .para span {
-      font-size: inherit;
-      line-height: inherit;
-      text-align: justify;
-      hyphens: auto;
-      -webkit-hyphens: auto;
-      overflow-wrap: break-word;
-      word-break: break-word;
-      max-width: 100%;
-      box-sizing: border-box;
     }
 
     .ficha-colunas ul {
@@ -118,18 +99,23 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
 
     /* Rich text dentro de parágrafos */
-    .ficha-colunas .para strong { font-weight: 700; }
-    .ficha-colunas .para em { font-style: italic; }
-    .ficha-colunas .para u { text-decoration: underline; }
-    .ficha-colunas .para s { text-decoration: line-through; }
-    .ficha-colunas .para a { color: #1862BC; text-decoration: underline; }
-    .ficha-colunas .para code {
+    .ficha-colunas p strong { font-weight: 700; }
+    .ficha-colunas p em { font-style: italic; }
+    .ficha-colunas p u { text-decoration: underline; }
+    .ficha-colunas p s { text-decoration: line-through; }
+    .ficha-colunas p a { color: #1862BC; text-decoration: underline; }
+    .ficha-colunas p code {
       background: #f0f0f0;
       padding: 1px 4px;
       border-radius: 3px;
       font-family: monospace;
       font-size: 0.88em;
     }
+    .ficha-colunas p ul, .ficha-colunas p ol {
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+
     /* Tabelas ocupam a coluna inteira */
     .ficha-colunas table {
       width: 100%;
@@ -164,24 +150,12 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .callout-critico { border-color: #DC3545; background: #fff5f5; }
     .callout-titulo  { font-weight: 700; color: #00205B; margin-bottom: 4px; font-size: 11px; }
 
-    /* Imagens — fica dentro da coluna.
-       max-height impede que uma imagem alta ultrapasse a coluna e
-       quebre o layout de 2 colunas no Chrome. */
-    .ficha-colunas figure {
-      margin: 8px 0;
-      text-align: center;
-      overflow: hidden;
-    }
+    /* Imagens */
     .ficha-colunas img {
       max-width: 100%;
-      max-height: 220px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto;
       border-radius: 4px;
       border: 1px solid #ccc;
+      break-inside: avoid;
     }
     .ficha-colunas figcaption {
       text-align: center;
@@ -246,10 +220,8 @@ function gerarHTMLFicha(ficha: Ficha): string {
       return `<h3>${esc(secao.titulo)}</h3>`;
     }
     if (secao.tipo === 'paragrafo') {
-      /* div.para em vez de <p> evita HTML inválido quando o conteúdo
-         do RichTextEditor já contém elementos de bloco (<p>, <div>).
-         O seletor .ficha-colunas .para garante font-size:11px em tudo. */
-      return `<div class="para">${secao.conteudo || ''}</div>`;
+      /* conteudo pode ser HTML rico — inserir diretamente sem escapar */
+      return `<p>${secao.conteudo || ''}</p>`;
     }
     if (secao.tipo === 'lista' && secao.itens) {
       const itens = secao.itens.map((i) => `<li>${esc(i)}</li>`).join('');
