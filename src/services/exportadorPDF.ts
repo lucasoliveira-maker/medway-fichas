@@ -174,7 +174,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-top: 20px;
     }
 
-    @page { margin: 15mm 18mm; size: A4 portrait; }
+    @page { margin: 12mm 15mm 6mm 15mm; size: A4 portrait; }
     @media print { body { padding: 0; } }
   `;
 
