@@ -46,6 +46,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       column-gap: 20px;
       column-rule: 1px solid #e5e5e5;
       width: 100%;
+      font-size: 11px;
     }
 
     /* H2 dentro das colunas = título de seção → ocupa largura TOTAL */
@@ -68,21 +69,22 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       break-after: avoid;
     }
 
-    /* Parágrafo rico: wrapper .para + seus filhos p/div diretos */
+    /* Parágrafo rico: força 11px em todos os descendentes */
     .ficha-colunas .para,
-    .ficha-colunas .para > p,
-    .ficha-colunas .para > div {
-      font-size: 11px;
+    .ficha-colunas .para p,
+    .ficha-colunas .para div,
+    .ficha-colunas .para span,
+    .ficha-colunas .para li {
+      font-size: 11px !important;
       line-height: 1.55;
-      margin-bottom: 8px;
       text-align: justify;
       hyphens: auto;
       -webkit-hyphens: auto;
       overflow-wrap: break-word;
     }
-    /* evita margin duplo em divs internos */
-    .ficha-colunas .para > p,
-    .ficha-colunas .para > div { margin-bottom: 4px; }
+    .ficha-colunas .para { margin-bottom: 8px; }
+    .ficha-colunas .para p,
+    .ficha-colunas .para div { margin-bottom: 4px; }
 
     /* Listas standalone (tipo='lista') */
     .ficha-colunas > ul {
@@ -247,8 +249,9 @@ function gerarHTMLFicha(ficha: Ficha): string {
     }
     if (secao.tipo === 'paragrafo') {
       /* conteudo pode ser HTML rico (divs/p do contentEditable) — usar div.para
-         para evitar que elementos-bloco sejam içados para fora de .ficha-colunas */
-      return `<div class="para">${secao.conteudo || ''}</div>`;
+         para evitar que elementos-bloco sejam içados para fora de .ficha-colunas.
+         stripFontSize remove font-size inline que poderia sobrescrever o CSS. */
+      return `<div class="para">${stripFontSize(secao.conteudo || '')}</div>`;
     }
     if (secao.tipo === 'lista' && secao.itens) {
       const itens = secao.itens.map((i) => `<li>${esc(i)}</li>`).join('');
@@ -291,6 +294,12 @@ function gerarHTMLFicha(ficha: Ficha): string {
       <div class="ficha-footer">Medway Fichas &bull; Medway Design System v1.0 &bull; &copy; ${new Date().getFullYear()}</div>
     </div>
   `;
+}
+
+/** Remove font-size de qualquer style inline para não sobrescrever o CSS do PDF */
+function stripFontSize(html: string): string {
+  if (!html) return '';
+  return html.replace(/font-size\s*:\s*[^;'"}\s]+\s*;?/gi, '');
 }
 
 function esc(str?: string): string {
