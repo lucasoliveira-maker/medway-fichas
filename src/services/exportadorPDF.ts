@@ -162,14 +162,22 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .callout-critico { border-color: #DC3545; background: #fff5f5; }
     .callout-titulo  { font-weight: 700; color: #00205B; margin-bottom: 4px; font-size: 11px; }
 
-    /* Imagens — fica dentro da coluna, acompanha o fluxo normal */
+    /* Imagens — fica dentro da coluna.
+       max-height impede que uma imagem alta ultrapasse a coluna e
+       quebre o layout de 2 colunas no Chrome. */
     .ficha-colunas figure {
-      break-inside: avoid;
       margin: 8px 0;
       text-align: center;
+      overflow: hidden;
     }
     .ficha-colunas img {
       max-width: 100%;
+      max-height: 220px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
       border-radius: 4px;
       border: 1px solid #ccc;
     }
