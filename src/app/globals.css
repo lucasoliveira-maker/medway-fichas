@@ -76,3 +76,37 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* ─── Rich-text editor: listas e formatação visíveis na área de edição ─── */
+.richtext-editor ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin: 0.25em 0;
+}
+.richtext-editor ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin: 0.25em 0;
+}
+.richtext-editor li {
+  display: list-item;
+  margin-bottom: 0.15em;
+}
+/* recuo aninhado */
+.richtext-editor ul ul,
+.richtext-editor ol ol,
+.richtext-editor ul ol,
+.richtext-editor ol ul {
+  padding-left: 1.2em;
+}
+/* links dentro do editor */
+.richtext-editor a {
+  color: #1862BC;
+  text-decoration: underline;
+}
+/* placeholder via ::before quando vazio */
+.richtext-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}

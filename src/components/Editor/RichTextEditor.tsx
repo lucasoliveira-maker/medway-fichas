@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
+import { RulerBar, IndentMarkers } from './RulerBar';
 
 interface RichTextEditorProps {
   value: string;
@@ -8,6 +9,8 @@ interface RichTextEditorProps {
   placeholder?: string;
   minRows?: number;
 }
+
+const MAX_INDENT_PX = 140; // 100% da régua = 140 px de recuo
 
 export function RichTextEditor({
   value,
@@ -17,27 +20,36 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const suppressSync = useRef(false);
+  const savedRange = useRef<Range | null>(null); // último Range antes de clicar na régua
 
-  /* ── Sync external value → DOM (only when it truly differs, e.g. load) ── */
+  const [indentMarkers, setIndentMarkers] = useState<IndentMarkers>({
+    leftIndent: 0,
+    firstLine: 0,
+  });
+
+  /* ─────────────────────────────────────────────────────────────────
+     Sync external value → DOM  (só quando vem de fora, e.g. load)
+  ───────────────────────────────────────────────────────────────── */
   useEffect(() => {
     if (!editorRef.current) return;
-    if (suppressSync.current) {
-      suppressSync.current = false;
-      return;
-    }
+    if (suppressSync.current) { suppressSync.current = false; return; }
     if (editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value ?? '';
     }
   }, [value]);
 
-  /* ── Emit changes to parent ── */
+  /* ─────────────────────────────────────────────────────────────────
+     Emite HTML para o parent
+  ───────────────────────────────────────────────────────────────── */
   const emit = useCallback(() => {
     if (!editorRef.current) return;
     suppressSync.current = true;
     onChange(editorRef.current.innerHTML);
   }, [onChange]);
 
-  /* ── execCommand wrapper ── */
+  /* ─────────────────────────────────────────────────────────────────
+     execCommand wrapper
+  ───────────────────────────────────────────────────────────────── */
   const exec = useCallback(
     (cmd: string, val?: string) => {
       editorRef.current?.focus();
@@ -47,7 +59,113 @@ export function RichTextEditor({
     [emit],
   );
 
-  /* ── Link ── */
+  /* ─────────────────────────────────────────────────────────────────
+     Salva o Range atual (para restaurar ao arrastar a régua)
+  ───────────────────────────────────────────────────────────────── */
+  const saveRange = useCallback(() => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      savedRange.current = sel.getRangeAt(0).cloneRange();
+    }
+  }, []);
+
+  /* ─────────────────────────────────────────────────────────────────
+     Lê o recuo do bloco onde está o cursor e atualiza a régua
+  ───────────────────────────────────────────────────────────────── */
+  const readIndentFromCursor = useCallback(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+
+    let node: Node | null = sel.getRangeAt(0).startContainer;
+    while (node && node !== editor) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+        if (['ul', 'ol', 'p', 'div'].includes(tag)) {
+          const pl = parseFloat(el.style.paddingLeft) || 0;
+          const ti = parseFloat(el.style.textIndent) || 0;
+          setIndentMarkers({
+            leftIndent: pl / MAX_INDENT_PX,
+            firstLine: (pl + ti) / MAX_INDENT_PX,
+          });
+          return;
+        }
+      }
+      node = node.parentNode;
+    }
+    setIndentMarkers({ leftIndent: 0, firstLine: 0 });
+  }, []);
+
+  /* ─────────────────────────────────────────────────────────────────
+     Aplica recuo ao bloco mais próximo do cursor salvo
+  ───────────────────────────────────────────────────────────────── */
+  const applyIndent = useCallback(
+    (left: number, firstLine: number) => {
+      const editor = editorRef.current;
+      if (!editor) return;
+
+      // Restaura o range salvo para encontrar o bloco correto
+      if (savedRange.current) {
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(savedRange.current);
+      }
+
+      const leftPx = Math.round(left * MAX_INDENT_PX);
+      const firstLinePx = Math.round(firstLine * MAX_INDENT_PX);
+      const textIndent = firstLinePx - leftPx; // pode ser negativo (francês)
+
+      const sel = window.getSelection();
+      let target: HTMLElement | null = null;
+
+      if (sel && sel.rangeCount > 0) {
+        let node: Node | null = sel.getRangeAt(0).startContainer;
+        while (node && node !== editor) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const el = node as HTMLElement;
+            const tag = el.tagName.toLowerCase();
+            if (['ul', 'ol', 'p', 'div'].includes(tag)) {
+              target = el;
+              break;
+            }
+          }
+          node = node.parentNode;
+        }
+      }
+
+      // Fallback: primeiro filho do editor
+      if (!target && editor.firstElementChild) {
+        target = editor.firstElementChild as HTMLElement;
+      }
+
+      if (target) {
+        target.style.paddingLeft = leftPx > 0 ? `${leftPx}px` : '';
+        const tag = target.tagName.toLowerCase();
+        if (tag === 'p' || tag === 'div') {
+          target.style.textIndent = textIndent !== 0 ? `${textIndent}px` : '';
+        }
+        emit();
+      }
+    },
+    [emit],
+  );
+
+  /* ─────────────────────────────────────────────────────────────────
+     Régua muda → aplica imediatamente
+  ───────────────────────────────────────────────────────────────── */
+  const handleRulerChange = useCallback(
+    (m: IndentMarkers) => {
+      setIndentMarkers(m);
+      applyIndent(m.leftIndent, m.firstLine);
+    },
+    [applyIndent],
+  );
+
+  /* ─────────────────────────────────────────────────────────────────
+     Link
+  ───────────────────────────────────────────────────────────────── */
   const handleLink = useCallback(() => {
     editorRef.current?.focus();
     const sel = window.getSelection();
@@ -67,7 +185,9 @@ export function RichTextEditor({
     }
   }, [exec, emit]);
 
-  /* ── Inline code ── */
+  /* ─────────────────────────────────────────────────────────────────
+     Código inline
+  ───────────────────────────────────────────────────────────────── */
   const handleCode = useCallback(() => {
     editorRef.current?.focus();
     const sel = window.getSelection();
@@ -87,13 +207,18 @@ export function RichTextEditor({
     emit();
   }, [emit]);
 
-  /* ── Emoji picker (simple prompt fallback) ── */
+  /* ─────────────────────────────────────────────────────────────────
+     Emoji
+  ───────────────────────────────────────────────────────────────── */
   const handleEmoji = useCallback(() => {
     editorRef.current?.focus();
     const emoji = window.prompt('Cole ou digita um emoji:', '');
     if (emoji) exec('insertText', emoji);
   }, [exec]);
 
+  /* ─────────────────────────────────────────────────────────────────
+     Render
+  ───────────────────────────────────────────────────────────────── */
   const minH = `${minRows * 1.65}rem`;
 
   const Divider = () => (
@@ -113,7 +238,7 @@ export function RichTextEditor({
       type="button"
       title={title}
       onMouseDown={(e) => {
-        e.preventDefault(); // prevent blur before exec
+        e.preventDefault(); // evita perder foco do editor
         onClick();
       }}
       className="p-1.5 rounded text-medway-dark hover:bg-gray-200 active:bg-gray-300 transition select-none"
@@ -124,13 +249,14 @@ export function RichTextEditor({
 
   return (
     <div className="border border-gray-300 rounded-sm overflow-hidden focus-within:ring-2 focus-within:ring-medway-primary">
+
       {/* ── Toolbar ── */}
       <div className="flex items-center flex-wrap gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200">
         <Btn title="Negrito (Ctrl+B)" onClick={() => exec('bold')}>
           <span className="text-sm font-bold leading-none">B</span>
         </Btn>
         <Btn title="Itálico (Ctrl+I)" onClick={() => exec('italic')}>
-          <em className="text-sm leading-none not-italic" style={{ fontStyle: 'italic' }}>I</em>
+          <em className="text-sm leading-none" style={{ fontStyle: 'italic' }}>I</em>
         </Btn>
         <Btn title="Sublinhado (Ctrl+U)" onClick={() => exec('underline')}>
           <span className="text-sm underline leading-none">U</span>
@@ -165,9 +291,9 @@ export function RichTextEditor({
             <rect x="9" y="5" width="12" height="2" rx="1"/>
             <rect x="9" y="11" width="12" height="2" rx="1"/>
             <rect x="9" y="17" width="12" height="2" rx="1"/>
-            <text x="3" y="7.5" fontSize="5" fontWeight="bold" fill="currentColor">1</text>
-            <text x="3" y="13.5" fontSize="5" fontWeight="bold" fill="currentColor">2</text>
-            <text x="3" y="19.5" fontSize="5" fontWeight="bold" fill="currentColor">3</text>
+            <text x="2.5" y="7.5" fontSize="5" fontWeight="bold" fill="currentColor">1</text>
+            <text x="2.5" y="13.5" fontSize="5" fontWeight="bold" fill="currentColor">2</text>
+            <text x="2.5" y="19.5" fontSize="5" fontWeight="bold" fill="currentColor">3</text>
           </svg>
         </Btn>
 
@@ -214,18 +340,23 @@ export function RichTextEditor({
         </Btn>
       </div>
 
-      {/* ── Editable area ── */}
+      {/* ── Régua ── */}
+      <RulerBar markers={indentMarkers} onChange={handleRulerChange} />
+
+      {/* ── Área editável ── */}
       <div
         ref={editorRef}
         contentEditable
         suppressContentEditableWarning
         onInput={emit}
+        onClick={() => { saveRange(); readIndentFromCursor(); }}
+        onKeyUp={() => { saveRange(); readIndentFromCursor(); }}
+        onSelect={saveRange}
         style={{ minHeight: minH }}
         data-placeholder={placeholder}
         className={[
-          'px-3 py-2 text-sm text-medway-text focus:outline-none',
-          'leading-relaxed',
-          /* placeholder via CSS when empty */
+          'px-3 py-2 text-sm text-medway-text focus:outline-none leading-relaxed',
+          'richtext-editor', // classe para os estilos globais de listas
           'empty:before:content-[attr(data-placeholder)]',
           'empty:before:text-gray-400',
           'empty:before:pointer-events-none',
