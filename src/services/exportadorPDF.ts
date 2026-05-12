@@ -68,7 +68,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       break-after: avoid;
     }
 
-    .ficha-colunas p {
+    /* .para é o wrapper do parágrafo — usa div para evitar HTML inválido
+       quando o conteúdo do RichTextEditor já contém tags de bloco */
+    .ficha-colunas .para {
       font-size: 11px;
       line-height: 1.55;
       margin-bottom: 8px;
@@ -76,6 +78,16 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       hyphens: auto;
       -webkit-hyphens: auto;
       overflow-wrap: break-word;
+    }
+    /* garante que QUALQUER elemento filho herde o tamanho correto */
+    .ficha-colunas .para p,
+    .ficha-colunas .para div,
+    .ficha-colunas .para span {
+      font-size: inherit;
+      line-height: inherit;
+      text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
     }
 
     .ficha-colunas ul {
@@ -99,19 +111,19 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
 
     /* Rich text dentro de parágrafos */
-    .ficha-colunas p strong { font-weight: 700; }
-    .ficha-colunas p em { font-style: italic; }
-    .ficha-colunas p u { text-decoration: underline; }
-    .ficha-colunas p s { text-decoration: line-through; }
-    .ficha-colunas p a { color: #1862BC; text-decoration: underline; }
-    .ficha-colunas p code {
+    .ficha-colunas .para strong { font-weight: 700; }
+    .ficha-colunas .para em { font-style: italic; }
+    .ficha-colunas .para u { text-decoration: underline; }
+    .ficha-colunas .para s { text-decoration: line-through; }
+    .ficha-colunas .para a { color: #1862BC; text-decoration: underline; }
+    .ficha-colunas .para code {
       background: #f0f0f0;
       padding: 1px 4px;
       border-radius: 3px;
       font-family: monospace;
       font-size: 0.88em;
     }
-    .ficha-colunas p ul, .ficha-colunas p ol {
+    .ficha-colunas .para ul, .ficha-colunas .para ol {
       padding-left: 18px;
       margin: 4px 0;
     }
@@ -150,11 +162,10 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .callout-critico { border-color: #DC3545; background: #fff5f5; }
     .callout-titulo  { font-weight: 700; color: #00205B; margin-bottom: 4px; font-size: 11px; }
 
-    /* Imagens — figure ocupa largura total para não quebrar o fluxo de 2 colunas */
+    /* Imagens — fica dentro da coluna, acompanha o fluxo normal */
     .ficha-colunas figure {
-      column-span: all;
       break-inside: avoid;
-      margin: 12px 0;
+      margin: 8px 0;
       text-align: center;
     }
     .ficha-colunas img {
@@ -225,8 +236,10 @@ function gerarHTMLFicha(ficha: Ficha): string {
       return `<h3>${esc(secao.titulo)}</h3>`;
     }
     if (secao.tipo === 'paragrafo') {
-      /* conteudo pode ser HTML rico — inserir diretamente sem escapar */
-      return `<p>${secao.conteudo || ''}</p>`;
+      /* div.para em vez de <p> evita HTML inválido quando o conteúdo
+         do RichTextEditor já contém elementos de bloco (<p>, <div>).
+         O seletor .ficha-colunas .para garante font-size:11px em tudo. */
+      return `<div class="para">${secao.conteudo || ''}</div>`;
     }
     if (secao.tipo === 'lista' && secao.itens) {
       const itens = secao.itens.map((i) => `<li>${esc(i)}</li>`).join('');
