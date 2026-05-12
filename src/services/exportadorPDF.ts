@@ -174,8 +174,10 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-top: 20px;
     }
 
-    @page { margin: 12mm 15mm 6mm 15mm; size: A4 portrait; }
-    @media print { body { padding: 0; } }
+    /* margin:0 elimina o espaço onde o browser insere data/hora/título */
+    @page { margin: 0; size: A4 portrait; }
+    /* o padding do body substitui as margens da página */
+    @media print { body { padding: 12mm 15mm 6mm 15mm; } }
   `;
 
   const conteudoHTML = gerarHTMLFicha(ficha);
@@ -249,16 +251,9 @@ function gerarHTMLFicha(ficha: Ficha): string {
     <div class="ficha-header">
       <h1>${esc(ficha.titulo)}</h1>
       ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
-      <div class="ficha-meta">
-        Tipo: ${ficha.metadados.tipo} &nbsp;|&nbsp;
-        Criado em: ${new Date(ficha.metadados.criado).toLocaleDateString('pt-BR')}
-      </div>
     </div>
     <div class="ficha-colunas">
       ${secoes}
-      <div class="ficha-footer">
-        Medway Fichas &nbsp;•&nbsp; Medway Design System v1.0 &nbsp;•&nbsp; © ${new Date().getFullYear()}
-      </div>
     </div>
   `;
 }
