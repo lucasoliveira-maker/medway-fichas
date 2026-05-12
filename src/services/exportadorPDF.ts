@@ -73,6 +73,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       line-height: 1.55;
       margin-bottom: 8px;
       text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      overflow-wrap: break-word;
     }
 
     .ficha-colunas ul {

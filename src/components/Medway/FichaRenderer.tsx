@@ -64,11 +64,13 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
             {/* Parágrafo — suporta HTML rico gerado pelo RichTextEditor */}
             {secao.tipo === 'paragrafo' && (
               <div
+                lang="pt-BR"
                 className="text-body text-medway-text leading-relaxed prose-sm max-w-none
                   [&_strong]:font-bold [&_em]:italic [&_u]:underline [&_s]:line-through
                   [&_a]:text-medway-secondary [&_a]:underline
                   [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:rounded [&_code]:font-mono [&_code]:text-[0.88em]
                   [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                style={{ textAlign: 'justify', hyphens: 'auto', WebkitHyphens: 'auto' }}
                 dangerouslySetInnerHTML={{ __html: secao.conteudo || '' }}
               />
             )}
