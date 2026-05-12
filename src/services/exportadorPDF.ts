@@ -123,11 +123,6 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       font-family: monospace;
       font-size: 0.88em;
     }
-    .ficha-colunas .para ul, .ficha-colunas .para ol {
-      padding-left: 18px;
-      margin: 4px 0;
-    }
-
     /* Tabelas ocupam a coluna inteira */
     .ficha-colunas table {
       width: 100%;
