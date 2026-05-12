@@ -150,12 +150,17 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .callout-critico { border-color: #DC3545; background: #fff5f5; }
     .callout-titulo  { font-weight: 700; color: #00205B; margin-bottom: 4px; font-size: 11px; }
 
-    /* Imagens */
+    /* Imagens — figure ocupa largura total para não quebrar o fluxo de 2 colunas */
+    .ficha-colunas figure {
+      column-span: all;
+      break-inside: avoid;
+      margin: 12px 0;
+      text-align: center;
+    }
     .ficha-colunas img {
       max-width: 100%;
       border-radius: 4px;
       border: 1px solid #ccc;
-      break-inside: avoid;
     }
     .ficha-colunas figcaption {
       text-align: center;
