@@ -83,6 +83,12 @@ export function RichTextEditor({
       if (node.nodeType === Node.ELEMENT_NODE) {
         const el = node as HTMLElement;
         const tag = el.tagName.toLowerCase();
+        if (tag === 'li') {
+          // cada <li> usa margin-left individualmente
+          const ml = parseFloat(el.style.marginLeft) || 0;
+          setIndentMarkers({ leftIndent: ml / MAX_INDENT_PX, firstLine: ml / MAX_INDENT_PX });
+          return;
+        }
         if (['ul', 'ol', 'p', 'div'].includes(tag)) {
           const pl = parseFloat(el.style.paddingLeft) || 0;
           const ti = parseFloat(el.style.textIndent) || 0;
@@ -99,7 +105,10 @@ export function RichTextEditor({
   }, []);
 
   /* ─────────────────────────────────────────────────────────────────
-     Aplica recuo ao bloco mais próximo do cursor salvo
+     Aplica recuo ao bloco mais próximo do cursor salvo.
+     — <li>  → margin-left  (move bullet + texto individualmente)
+     — <p>/<div> → padding-left + text-indent
+     — <ul>/<ol> → padding-left (caso cursor não esteja dentro de <li>)
   ───────────────────────────────────────────────────────────────── */
   const applyIndent = useCallback(
     (left: number, firstLine: number) => {
@@ -115,10 +124,10 @@ export function RichTextEditor({
 
       const leftPx = Math.round(left * MAX_INDENT_PX);
       const firstLinePx = Math.round(firstLine * MAX_INDENT_PX);
-      const textIndent = firstLinePx - leftPx; // pode ser negativo (francês)
 
       const sel = window.getSelection();
       let target: HTMLElement | null = null;
+      let targetTag = '';
 
       if (sel && sel.rangeCount > 0) {
         let node: Node | null = sel.getRangeAt(0).startContainer;
@@ -126,25 +135,28 @@ export function RichTextEditor({
           if (node.nodeType === Node.ELEMENT_NODE) {
             const el = node as HTMLElement;
             const tag = el.tagName.toLowerCase();
-            if (['ul', 'ol', 'p', 'div'].includes(tag)) {
-              target = el;
-              break;
-            }
+            if (tag === 'li') { target = el; targetTag = 'li'; break; }
+            if (['ul', 'ol', 'p', 'div'].includes(tag)) { target = el; targetTag = tag; break; }
           }
           node = node.parentNode;
         }
       }
 
-      // Fallback: primeiro filho do editor
       if (!target && editor.firstElementChild) {
         target = editor.firstElementChild as HTMLElement;
+        targetTag = target.tagName.toLowerCase();
       }
 
       if (target) {
-        target.style.paddingLeft = leftPx > 0 ? `${leftPx}px` : '';
-        const tag = target.tagName.toLowerCase();
-        if (tag === 'p' || tag === 'div') {
-          target.style.textIndent = textIndent !== 0 ? `${textIndent}px` : '';
+        if (targetTag === 'li') {
+          // bullet individual: margin-left move o bullet E o texto juntos
+          target.style.marginLeft = leftPx > 0 ? `${leftPx}px` : '';
+        } else {
+          target.style.paddingLeft = leftPx > 0 ? `${leftPx}px` : '';
+          if (targetTag === 'p' || targetTag === 'div') {
+            const textIndent = firstLinePx - leftPx;
+            target.style.textIndent = textIndent !== 0 ? `${textIndent}px` : '';
+          }
         }
         emit();
       }
