@@ -10,6 +10,7 @@ interface UseFichaReturn {
   updateSubtitulo: (subtitulo: string) => void;
   updateSecao: (secaoId: string, updates: Partial<Secao>) => void;
   addSecao: (tipo: Secao['tipo']) => void;
+  addSecaoAt: (tipo: Secao['tipo'], afterIndex: number) => void;
   removeSecao: (secaoId: string) => void;
   reorderSecoes: (secoes: Secao[]) => void;
   setFicha: (ficha: Ficha) => void;
@@ -104,6 +105,25 @@ export function useFicha(initialFicha?: Ficha): UseFichaReturn {
     }));
   }, [ficha.secoes.length]);
 
+  const addSecaoAt = useCallback((tipo: Secao['tipo'], afterIndex: number) => {
+    const novaSecao: Secao = { id: uuidv4(), tipo, ordem: afterIndex + 1 };
+    if (tipo === 'paragrafo' || tipo === 'h2' || tipo === 'h3') novaSecao.conteudo = '';
+    else if (tipo === 'lista') novaSecao.itens = [''];
+    else if (tipo === 'tabela') novaSecao.tabela = { headers: [], rows: [] };
+    else if (tipo === 'callout') novaSecao.callout = { tipo: 'info', conteudo: '' };
+    else if (tipo === 'imagem') novaSecao.imagem = { dataUrl: '', legenda: '' };
+
+    setFichaState((prev) => {
+      const arr = [...prev.secoes];
+      arr.splice(afterIndex + 1, 0, novaSecao);
+      return {
+        ...prev,
+        secoes: arr.map((s, i) => ({ ...s, ordem: i })),
+        metadados: { ...prev.metadados, atualizado: new Date() },
+      };
+    });
+  }, []);
+
   const removeSecao = useCallback((secaoId: string) => {
     setFichaState((prev) => ({
       ...prev,
@@ -126,6 +146,7 @@ export function useFicha(initialFicha?: Ficha): UseFichaReturn {
     updateSubtitulo,
     updateSecao,
     addSecao,
+    addSecaoAt,
     removeSecao,
     reorderSecoes,
     setFicha: setFichaState,

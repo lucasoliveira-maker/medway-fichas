@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Ficha, Secao, SecaoTipo } from '@/types/ficha.types';
 import { Heading } from '@/components/Medway/Heading';
 import { RichTextEditor } from './RichTextEditor';
@@ -10,8 +10,76 @@ interface FormularioFichaProps {
   onUpdateTitulo: (titulo: string) => void;
   onUpdateSubtitulo: (subtitulo: string) => void;
   onAddSecao: (tipo: SecaoTipo) => void;
+  onAddSecaoAt: (tipo: SecaoTipo, afterIndex: number) => void;
   onUpdateSecao: (secaoId: string, updates: Partial<Secao>) => void;
   onRemoveSecao: (secaoId: string) => void;
+}
+
+const TIPO_LABELS: Record<SecaoTipo, string> = {
+  h2: 'H2 — Seção Principal',
+  h3: 'H3 — Subseção',
+  paragrafo: 'Parágrafo',
+  lista: 'Lista',
+  tabela: 'Tabela',
+  imagem: 'Imagem',
+  callout: 'Callout',
+};
+
+/** Separador entre seções com mini-menu para inserir nova seção naquele ponto */
+function InsertSeparator({ onInsert }: { onInsert: (tipo: SecaoTipo) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Fecha ao clicar fora
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative flex items-center gap-2 py-1 group">
+      {/* linha divisória */}
+      <div className="flex-1 h-px bg-gray-200 group-hover:bg-medway-primary/40 transition" />
+
+      {/* botão "+" */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        title="Inserir seção aqui"
+        className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-dashed border-gray-300
+                   text-xs font-semibold text-medway-gray bg-white
+                   hover:border-medway-primary hover:text-medway-primary hover:bg-medway-primary/5
+                   transition whitespace-nowrap"
+      >
+        <span className="text-base leading-none">+</span> inserir aqui
+      </button>
+
+      {/* linha divisória */}
+      <div className="flex-1 h-px bg-gray-200 group-hover:bg-medway-primary/40 transition" />
+
+      {/* dropdown de tipo */}
+      {open && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 z-20 mt-1
+                        bg-white border border-gray-200 rounded-md shadow-medway-lg
+                        min-w-[180px] py-1 text-sm">
+          {(Object.keys(TIPO_LABELS) as SecaoTipo[]).map((tipo) => (
+            <button
+              key={tipo}
+              type="button"
+              onClick={() => { onInsert(tipo); setOpen(false); }}
+              className="w-full text-left px-4 py-2 text-medway-dark hover:bg-medway-primary/10 hover:text-medway-primary transition"
+            >
+              {TIPO_LABELS[tipo]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function FormularioFicha({
@@ -19,6 +87,7 @@ export function FormularioFicha({
   onUpdateTitulo,
   onUpdateSubtitulo,
   onAddSecao,
+  onAddSecaoAt,
   onUpdateSecao,
   onRemoveSecao,
 }: FormularioFichaProps) {
@@ -57,14 +126,19 @@ export function FormularioFicha({
         <Heading level={3} className="mb-4">
           Seções
         </Heading>
-        <div className="space-y-4">
-          {ficha.secoes.map((secao) => (
-            <SecaoInput
-              key={secao.id}
-              secao={secao}
-              onUpdate={(updates) => onUpdateSecao(secao.id, updates)}
-              onRemove={() => onRemoveSecao(secao.id)}
-            />
+        <div className="space-y-0">
+          {ficha.secoes.map((secao, index) => (
+            <React.Fragment key={secao.id}>
+              {/* Separador ANTES de cada seção (exceto a primeira) */}
+              {index > 0 && (
+                <InsertSeparator onInsert={(tipo) => onAddSecaoAt(tipo, index - 1)} />
+              )}
+              <SecaoInput
+                secao={secao}
+                onUpdate={(updates) => onUpdateSecao(secao.id, updates)}
+                onRemove={() => onRemoveSecao(secao.id)}
+              />
+            </React.Fragment>
           ))}
         </div>
       </div>

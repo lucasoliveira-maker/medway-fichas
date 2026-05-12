@@ -26,7 +26,7 @@ function EditorConteudo() {
   const searchParams = useSearchParams();
   const fichaId = searchParams.get('id');
 
-  const { ficha, updateTitulo, updateSubtitulo, addSecao, updateSecao, removeSecao, setFicha } =
+  const { ficha, updateTitulo, updateSubtitulo, addSecao, addSecaoAt, updateSecao, removeSecao, setFicha } =
     useFicha();
 
   const [savedFichas, setSavedFichas, isLoaded] = useLocalStorage<Ficha[]>('fichas', []);
@@ -154,6 +154,7 @@ function EditorConteudo() {
                 onUpdateTitulo={updateTitulo}
                 onUpdateSubtitulo={updateSubtitulo}
                 onAddSecao={addSecao}
+                onAddSecaoAt={addSecaoAt}
                 onUpdateSecao={updateSecao}
                 onRemoveSecao={removeSecao}
               />
