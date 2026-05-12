@@ -68,8 +68,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       break-after: avoid;
     }
 
-    /* .para é o wrapper do parágrafo — usa div para evitar HTML inválido
-       quando o conteúdo do RichTextEditor já contém tags de bloco */
+    /* .para — wrapper do parágrafo (div evita HTML inválido com blocos internos) */
     .ficha-colunas .para {
       font-size: 11px;
       line-height: 1.55;
@@ -78,8 +77,12 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       hyphens: auto;
       -webkit-hyphens: auto;
       overflow-wrap: break-word;
+      word-break: break-word;
+      overflow: hidden;        /* impede transbordo além da coluna */
+      max-width: 100%;
+      box-sizing: border-box;
     }
-    /* garante que QUALQUER elemento filho herde o tamanho correto */
+    /* filhos herdam tamanho e ficam contidos */
     .ficha-colunas .para p,
     .ficha-colunas .para div,
     .ficha-colunas .para span {
@@ -88,6 +91,10 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       text-align: justify;
       hyphens: auto;
       -webkit-hyphens: auto;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .ficha-colunas ul {
