@@ -230,6 +230,13 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
   janela.document.close();
 }
 
+function formatDate(d: Date | string | undefined): string {
+  if (!d) return '';
+  const date = d instanceof Date ? d : new Date(d);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('pt-BR');
+}
+
 function gerarHTMLFicha(ficha: Ficha): string {
   const secoes = ficha.secoes.map((secao) => {
     if (secao.tipo === 'h2') {
@@ -267,13 +274,21 @@ function gerarHTMLFicha(ficha: Ficha): string {
     return '';
   }).join('\n');
 
+  const tipo = ficha.metadados?.tipo ?? '';
+  const dataCriado = formatDate(ficha.dataFicha ?? ficha.metadados?.criado);
+  const metaPartes: string[] = [];
+  if (tipo) metaPartes.push(`Tipo: ${esc(tipo)}`);
+  if (dataCriado) metaPartes.push(`Criado em: ${dataCriado}`);
+
   return `
     <div class="ficha-header">
       <h1>${esc(ficha.titulo)}</h1>
       ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
+      ${metaPartes.length ? `<div class="ficha-meta">${metaPartes.join(' | ')}</div>` : ''}
     </div>
     <div class="ficha-colunas">
       ${secoes}
+      <div class="ficha-footer">Medway Fichas &bull; Medway Design System v1.0 &bull; &copy; ${new Date().getFullYear()}</div>
     </div>
   `;
 }
