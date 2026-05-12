@@ -68,7 +68,10 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       break-after: avoid;
     }
 
-    .ficha-colunas p {
+    /* Parágrafo rico: wrapper .para + seus filhos p/div diretos */
+    .ficha-colunas .para,
+    .ficha-colunas .para > p,
+    .ficha-colunas .para > div {
       font-size: 11px;
       line-height: 1.55;
       margin-bottom: 8px;
@@ -77,20 +80,24 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       -webkit-hyphens: auto;
       overflow-wrap: break-word;
     }
+    /* evita margin duplo em divs internos */
+    .ficha-colunas .para > p,
+    .ficha-colunas .para > div { margin-bottom: 4px; }
 
-    .ficha-colunas ul {
+    /* Listas standalone (tipo='lista') */
+    .ficha-colunas > ul {
       list-style: none;
       padding: 0;
       margin-bottom: 8px;
     }
-    .ficha-colunas ul li {
+    .ficha-colunas > ul li {
       font-size: 11px;
       line-height: 1.5;
       margin-bottom: 4px;
       padding-left: 14px;
       position: relative;
     }
-    .ficha-colunas ul li::before {
+    .ficha-colunas > ul li::before {
       content: "•";
       color: #01CFAB;
       font-weight: bold;
@@ -98,22 +105,34 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       left: 0;
     }
 
-    /* Rich text dentro de parágrafos */
-    .ficha-colunas p strong { font-weight: 700; }
-    .ficha-colunas p em { font-style: italic; }
-    .ficha-colunas p u { text-decoration: underline; }
-    .ficha-colunas p s { text-decoration: line-through; }
-    .ficha-colunas p a { color: #1862BC; text-decoration: underline; }
-    .ficha-colunas p code {
+    /* Rich text dentro de .para */
+    .ficha-colunas .para strong { font-weight: 700; }
+    .ficha-colunas .para em { font-style: italic; }
+    .ficha-colunas .para u { text-decoration: underline; }
+    .ficha-colunas .para s { text-decoration: line-through; }
+    .ficha-colunas .para a { color: #1862BC; text-decoration: underline; }
+    .ficha-colunas .para code {
       background: #f0f0f0;
       padding: 1px 4px;
       border-radius: 3px;
       font-family: monospace;
       font-size: 0.88em;
     }
-    .ficha-colunas p ul, .ficha-colunas p ol {
+    /* Listas dentro de parágrafos ricos */
+    .ficha-colunas .para ul {
+      list-style-type: disc;
       padding-left: 18px;
       margin: 4px 0;
+    }
+    .ficha-colunas .para ol {
+      list-style-type: decimal;
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+    .ficha-colunas .para li {
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 2px;
     }
 
     /* Tabelas ocupam a coluna inteira */
@@ -220,8 +239,9 @@ function gerarHTMLFicha(ficha: Ficha): string {
       return `<h3>${esc(secao.titulo)}</h3>`;
     }
     if (secao.tipo === 'paragrafo') {
-      /* conteudo pode ser HTML rico — inserir diretamente sem escapar */
-      return `<p>${secao.conteudo || ''}</p>`;
+      /* conteudo pode ser HTML rico (divs/p do contentEditable) — usar div.para
+         para evitar que elementos-bloco sejam içados para fora de .ficha-colunas */
+      return `<div class="para">${secao.conteudo || ''}</div>`;
     }
     if (secao.tipo === 'lista' && secao.itens) {
       const itens = secao.itens.map((i) => `<li>${esc(i)}</li>`).join('');
