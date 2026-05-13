@@ -26,7 +26,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
 
     .ficha-header h2 {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 600;
       color: #1862BC;
       margin-bottom: 10px;
@@ -52,7 +52,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     /* H2 dentro das colunas = título de seção → ocupa largura TOTAL */
     .ficha-colunas h2 {
       column-span: all;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 700;
       color: #00205B;
       margin: 18px 0 10px;
@@ -62,10 +62,28 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
 
     /* H3 = subseção dentro das colunas */
     .ficha-colunas h3 {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       color: #1862BC;
       margin: 12px 0 6px;
+      break-after: avoid;
+    }
+
+    /* H4 = sub-subseção dentro das colunas */
+    .ficha-colunas h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1862BC;
+      margin: 10px 0 5px;
+      break-after: avoid;
+    }
+
+    /* H5 = sub-sub-subseção dentro das colunas */
+    .ficha-colunas h5 {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1862BC;
+      margin: 8px 0 4px;
       break-after: avoid;
     }
 
@@ -286,6 +304,12 @@ function gerarHTMLFicha(ficha: Ficha): string {
     }
     if (secao.tipo === 'h3') {
       return `<h3>${esc(secao.titulo)}</h3>`;
+    }
+    if (secao.tipo === 'h4') {
+      return `<h4>${esc(secao.titulo)}</h4>`;
+    }
+    if (secao.tipo === 'h5') {
+      return `<h5>${esc(secao.titulo)}</h5>`;
     }
     if (secao.tipo === 'paragrafo') {
       /* conteudo pode ser HTML rico (divs/p do contentEditable) — usar div.para

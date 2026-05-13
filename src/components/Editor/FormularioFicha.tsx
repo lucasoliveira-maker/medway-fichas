@@ -18,6 +18,8 @@ interface FormularioFichaProps {
 const TIPO_LABELS: Record<SecaoTipo, string> = {
   h2: 'H2 — Seção Principal',
   h3: 'H3 — Subseção',
+  h4: 'H4 — Sub-subseção',
+  h5: 'H5 — Sub-sub-subseção',
   paragrafo: 'Parágrafo',
   lista: 'Lista',
   tabela: 'Tabela',
@@ -27,7 +29,7 @@ const TIPO_LABELS: Record<SecaoTipo, string> = {
 };
 
 /* Tipos visíveis no dropdown (removendo lista, tabela, callout) */
-const TIPOS_VISIVEIS: SecaoTipo[] = ['h2', 'h3', 'paragrafo', 'imagem', 'destaque'];
+const TIPOS_VISIVEIS: SecaoTipo[] = ['h2', 'h3', 'h4', 'h5', 'paragrafo', 'imagem', 'destaque'];
 
 /** Separador entre seções com mini-menu para inserir nova seção naquele ponto */
 function InsertSeparator({ onInsert }: { onInsert: (tipo: SecaoTipo) => void }) {
@@ -181,6 +183,8 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
         >
           <option value="h2">H2 - Seção Principal</option>
           <option value="h3">H3 - Subseção</option>
+          <option value="h4">H4 - Sub-subseção</option>
+          <option value="h5">H5 - Sub-sub-subseção</option>
           <option value="paragrafo">Parágrafo</option>
           <option value="imagem">Imagem</option>
           <option value="destaque">Box Destaque</option>
@@ -188,7 +192,7 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
       </div>
 
       {/* Conteúdo baseado no tipo */}
-      {(secao.tipo === 'h2' || secao.tipo === 'h3') && (
+      {(secao.tipo === 'h2' || secao.tipo === 'h3' || secao.tipo === 'h4' || secao.tipo === 'h5') && (
         <div>
           <label className="text-sm font-semibold text-medway-dark block mb-1">
             Título

@@ -86,7 +86,7 @@ export function useFicha(initialFicha?: Ficha): UseFichaReturn {
     };
 
     // Initialize secao based on tipo
-    if (tipo === 'paragrafo' || tipo === 'h2' || tipo === 'h3') {
+    if (tipo === 'paragrafo' || tipo === 'h2' || tipo === 'h3' || tipo === 'h4' || tipo === 'h5') {
       novaSecao.conteudo = '';
     } else if (tipo === 'lista') {
       novaSecao.itens = [''];
@@ -109,7 +109,7 @@ export function useFicha(initialFicha?: Ficha): UseFichaReturn {
 
   const addSecaoAt = useCallback((tipo: Secao['tipo'], afterIndex: number) => {
     const novaSecao: Secao = { id: uuidv4(), tipo, ordem: afterIndex + 1 };
-    if (tipo === 'paragrafo' || tipo === 'h2' || tipo === 'h3') novaSecao.conteudo = '';
+    if (tipo === 'paragrafo' || tipo === 'h2' || tipo === 'h3' || tipo === 'h4' || tipo === 'h5') novaSecao.conteudo = '';
     else if (tipo === 'lista') novaSecao.itens = [''];
     else if (tipo === 'tabela') novaSecao.tabela = { headers: [], rows: [] };
     else if (tipo === 'callout') novaSecao.callout = { tipo: 'info', conteudo: '' };
