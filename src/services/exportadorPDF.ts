@@ -1,22 +1,6 @@
 import { Ficha } from '@/types/ficha.types';
 
 export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Promise<void> {
-  /* CSS de background injetado no html (elemento raiz).
-     No CSS de impressão, o background do <html> propaga para o "canvas" da página,
-     que cobre a folha inteira incluindo as áreas de margem do @page.
-     Isso permite manter @page { margin: 15mm } para margens corretas em todas as páginas
-     enquanto a imagem cobre o A4 físico de borda a borda. */
-  const bgCSS = ficha.imagemFundo ? `
-    html {
-      background-image: url('${ficha.imagemFundo}');
-      background-size: 210mm 297mm;
-      background-repeat: repeat;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      color-adjust: exact;
-    }
-  ` : '';
-
   const printStyles = `
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
@@ -304,7 +288,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     <head>
       <meta charset="UTF-8"/>
       <title>${ficha.titulo}</title>
-      <style>${printStyles}${bgCSS}</style>
+      <style>${printStyles}</style>
     </head>
     <body>
       ${conteudoHTML}
