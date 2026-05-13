@@ -1,6 +1,47 @@
 import { Ficha } from '@/types/ficha.types';
 
 export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Promise<void> {
+  const temFundo = !!ficha.imagemFundo;
+
+  /* CSS de página: varia conforme há ou não imagem de fundo.
+     Com fundo: @page margin:0 para que position:fixed se ancore ao canto físico da folha.
+     Sem fundo: @page margin:15mm com numeração automática. */
+  const pageCSS = temFundo ? `
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    body {
+      padding: 15mm 15mm 15mm 15mm;
+    }
+    #bg-ficha {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 210mm;
+      height: 297mm;
+      z-index: -1;
+    }
+  ` : `
+    @page {
+      size: A4 portrait;
+      margin-top: 15mm;
+      margin-bottom: 15mm;
+      margin-left: 15mm;
+      margin-right: 15mm;
+      @bottom-center {
+        content: counter(page);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        color: #6B7684;
+      }
+    }
+    body {
+      padding: 0;
+    }
+  `;
+
   const printStyles = `
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
 
@@ -12,21 +53,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       color: #2C3E50;
       background: transparent;
       margin: 0;
-      padding: 0;
     }
 
-    /* Imagem de fundo: position:fixed em paged media ancora ao canto físico da folha A4.
-       top:0 left:0 = canto superior esquerdo físico do papel.
-       Repete automaticamente em cada página impressa pelo browser. */
-    #bg-ficha {
-      display: block;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 210mm;
-      height: 297mm;
-      z-index: -1;
-    }
+    ${pageCSS}
 
     /* ── CABEÇALHO full-width ── */
     .ficha-header { width: 100%; margin-bottom: 16px; margin-top: 0; }
@@ -266,23 +295,6 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       border-top: 1px solid #eee;
       padding-top: 10px;
       margin-top: 20px;
-    }
-
-    /* @page define margens reais da página — aplica-se a TODAS as páginas do PDF */
-    @page {
-      size: A4 portrait;
-      margin-top: 15mm;
-      margin-bottom: 15mm;
-      margin-left: 15mm;
-      margin-right: 15mm;
-
-      /* Numeração centralizada na margem inferior */
-      @bottom-center {
-        content: counter(page);
-        font-family: 'Montserrat', sans-serif;
-        font-size: 10px;
-        color: #6B7684;
-      }
     }
   `;
 
