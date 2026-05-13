@@ -262,6 +262,14 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-bottom: 15mm;
       margin-left: 15mm;
       margin-right: 15mm;
+
+      /* Numeração centralizada na margem inferior */
+      @bottom-center {
+        content: counter(page);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        color: #6B7684;
+      }
     }
   `;
 
