@@ -55,20 +55,31 @@ function EditorConteudo() {
   }, [ficha]);
 
   const handleSave = () => {
-    // Se estamos em um curso, sempre passa o cursoId
-    const fichaComCurso = {
-      ...ficha,
-      cursoId: cursoId || ficha.cursoId,
-      validacao: { ...validation, validadoEm: new Date() },
-      metadados: { ...ficha.metadados, atualizado: new Date() },
-    };
-    const lista = [...savedFichas];
-    const idx = lista.findIndex((f) => f.id === ficha.id);
-    if (idx >= 0) lista[idx] = fichaComCurso;
-    else lista.push(fichaComCurso);
-    setSavedFichas(lista);
-    setFicha(fichaComCurso);
-    alert('Ficha salva com sucesso!');
+    try {
+      // Se estamos em um curso, sempre passa o cursoId
+      const fichaComCurso = {
+        ...ficha,
+        cursoId: cursoId || ficha.cursoId,
+        validacao: { ...validation, validadoEm: new Date() },
+        metadados: { ...ficha.metadados, atualizado: new Date() },
+      };
+
+      // Debug
+      console.log('Salvando ficha:', fichaComCurso);
+
+      const lista = [...savedFichas];
+      const idx = lista.findIndex((f) => f.id === ficha.id);
+      if (idx >= 0) lista[idx] = fichaComCurso;
+      else lista.push(fichaComCurso);
+
+      console.log('Lista atualizada:', lista);
+      setSavedFichas(lista);
+      setFicha(fichaComCurso);
+      alert('✅ Ficha salva com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar ficha:', error);
+      alert('❌ Erro ao salvar ficha. Verifique o console para mais detalhes.');
+    }
   };
 
   const handleExportPDF = async () => {
