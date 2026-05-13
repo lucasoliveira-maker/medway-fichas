@@ -107,10 +107,11 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
             {/* Box Destaque */}
             {secao.tipo === 'destaque' && secao.destaque && (
               <div
-                className="rounded-xl bg-blue-50 px-5 py-4
-                  text-medway-dark text-sm leading-relaxed
+                className="rounded-xl px-5 py-4
+                  text-white text-sm leading-relaxed
                   [&_strong]:font-bold [&_em]:italic [&_u]:underline
                   [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                style={{ backgroundColor: '#50b9a8' }}
                 dangerouslySetInnerHTML={{ __html: secao.destaque.conteudo || '' }}
               />
             )}
