@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFicha } from '@/hooks/useFicha';
+import { useUndo } from '@/hooks/useUndo';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { FormularioFicha } from '@/components/Editor/FormularioFicha';
 import { FichaRenderer } from '@/components/Medway/FichaRenderer';
@@ -36,6 +37,11 @@ function EditorConteudo() {
   const [exporting, setExporting] = useState(false);
   const [fichaCarregada, setFichaCarregada] = useState(false);
 
+  // Histórico para Ctrl+Z (Undo/Redo)
+  const [history, setHistory] = useState<Ficha[]>([ficha]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const historyRef = useRef<Ficha[]>([ficha]);
+
   // Carrega ficha existente do localStorage quando editar (apenas uma vez por fichaId)
   useEffect(() => {
     if (isLoaded && fichaId && !fichaCarregada) {
@@ -53,6 +59,54 @@ function EditorConteudo() {
   useEffect(() => {
     setValidation(validarFichaMedway(ficha));
   }, [ficha]);
+
+  // Adiciona ficha ao histórico quando muda
+  useEffect(() => {
+    // Evita adicionar à história durante o carregamento inicial
+    if (!fichaCarregada) return;
+
+    // Remove qualquer estado "redo" quando uma nova ação é feita
+    const newHistory = historyRef.current.slice(0, historyIndex + 1);
+    newHistory.push(ficha);
+
+    // Limita o tamanho do histórico a 50 entradas
+    if (newHistory.length > 50) {
+      newHistory.shift();
+    } else {
+      setHistoryIndex(newHistory.length - 1);
+    }
+
+    historyRef.current = newHistory;
+    setHistory([...newHistory]);
+  }, [ficha, fichaCarregada, historyIndex]);
+
+  // Ctrl+Z / Ctrl+Y para Undo/Redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Z (Windows/Linux) ou Cmd+Z (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        if (historyIndex > 0) {
+          const newIndex = historyIndex - 1;
+          setHistoryIndex(newIndex);
+          setFicha(historyRef.current[newIndex]);
+        }
+      }
+      // Ctrl+Shift+Z ou Ctrl+Y para Redo
+      else if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') ||
+               ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
+        e.preventDefault();
+        if (historyIndex < historyRef.current.length - 1) {
+          const newIndex = historyIndex + 1;
+          setHistoryIndex(newIndex);
+          setFicha(historyRef.current[newIndex]);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [historyIndex]);
 
   const handleSave = () => {
     try {
