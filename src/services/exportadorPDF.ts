@@ -1,46 +1,21 @@
 import { Ficha } from '@/types/ficha.types';
 
 export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Promise<void> {
-  const temFundo = !!ficha.imagemFundo;
-
-  /* CSS de página: varia conforme há ou não imagem de fundo.
-     Com fundo: @page margin:0 para que position:fixed se ancore ao canto físico da folha.
-     Sem fundo: @page margin:15mm com numeração automática. */
-  const pageCSS = temFundo ? `
-    @page {
-      size: A4 portrait;
-      margin: 0;
+  /* CSS de background injetado no html (elemento raiz).
+     No CSS de impressão, o background do <html> propaga para o "canvas" da página,
+     que cobre a folha inteira incluindo as áreas de margem do @page.
+     Isso permite manter @page { margin: 15mm } para margens corretas em todas as páginas
+     enquanto a imagem cobre o A4 físico de borda a borda. */
+  const bgCSS = ficha.imagemFundo ? `
+    html {
+      background-image: url('${ficha.imagemFundo}');
+      background-size: 210mm 297mm;
+      background-repeat: repeat;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
     }
-    body {
-      padding: 15mm 15mm 15mm 15mm;
-    }
-    #bg-ficha {
-      display: block;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 210mm;
-      height: 297mm;
-      z-index: -1;
-    }
-  ` : `
-    @page {
-      size: A4 portrait;
-      margin-top: 15mm;
-      margin-bottom: 15mm;
-      margin-left: 15mm;
-      margin-right: 15mm;
-      @bottom-center {
-        content: counter(page);
-        font-family: 'Montserrat', sans-serif;
-        font-size: 10px;
-        color: #6B7684;
-      }
-    }
-    body {
-      padding: 0;
-    }
-  `;
+  ` : '';
 
   const printStyles = `
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
@@ -53,9 +28,24 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       color: #2C3E50;
       background: transparent;
       margin: 0;
+      padding: 0;
     }
 
-    ${pageCSS}
+    /* Margens fixas em TODAS as páginas — aplica-se inclusive a páginas 2, 3... */
+    @page {
+      size: A4 portrait;
+      margin-top: 15mm;
+      margin-bottom: 15mm;
+      margin-left: 15mm;
+      margin-right: 15mm;
+
+      @bottom-center {
+        content: counter(page);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        color: #6B7684;
+      }
+    }
 
     /* ── CABEÇALHO full-width ── */
     .ficha-header { width: 100%; margin-bottom: 16px; margin-top: 0; }
@@ -298,12 +288,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
   `;
 
-  /* Imagem de fundo: tag injetada no HTML (mais confiável que CSS background no print).
-     position:fixed repete em todas as páginas. offset de -15mm compensa as margens @page
-     para que a imagem cubra a folha A4 inteira (210×297mm) de borda a borda. */
-  const bgTag = ficha.imagemFundo
-    ? `<img id="bg-ficha" src="${ficha.imagemFundo}" />`
-    : '';
+
 
   const conteudoHTML = gerarHTMLFicha(ficha);
 
@@ -319,10 +304,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     <head>
       <meta charset="UTF-8"/>
       <title>${ficha.titulo}</title>
-      <style>${printStyles}</style>
+      <style>${printStyles}${bgCSS}</style>
     </head>
     <body>
-      ${bgTag}
       ${conteudoHTML}
       <script>
         window.onload = function() {
