@@ -187,6 +187,40 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-top: 4px;
     }
 
+    /* Box Destaque */
+    .box-destaque {
+      background: #E6F7F4;
+      border: 2px solid #01CFAB;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      break-inside: avoid;
+      font-size: 11px;
+      line-height: 1.55;
+      color: #00205B;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .box-destaque * {
+      font-size: inherit !important;
+      line-height: inherit;
+      color: inherit;
+    }
+    .box-destaque strong { font-weight: 700; }
+    .box-destaque em { font-style: italic; }
+    .box-destaque u { text-decoration: underline; }
+    .box-destaque ul {
+      list-style-type: disc;
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+    .box-destaque ol {
+      list-style-type: decimal;
+      padding-left: 18px;
+      margin: 4px 0;
+    }
+    .box-destaque li { margin-bottom: 2px; }
+
     .ficha-footer {
       column-span: all;
       font-size: 10px;
@@ -271,6 +305,9 @@ function gerarHTMLFicha(ficha: Ficha): string {
       const titulo = secao.callout.titulo
         ? `<div class="callout-titulo">${esc(secao.callout.titulo)}</div>` : '';
       return `<div class="${cls}">${titulo}<p>${esc(secao.callout.conteudo)}</p></div>`;
+    }
+    if (secao.tipo === 'destaque' && secao.destaque) {
+      return `<div class="box-destaque">${stripFontSize(secao.destaque.conteudo || '')}</div>`;
     }
     if (secao.tipo === 'imagem' && secao.imagem?.dataUrl) {
       return `<figure><img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}"/>

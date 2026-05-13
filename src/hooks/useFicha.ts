@@ -96,6 +96,8 @@ export function useFicha(initialFicha?: Ficha): UseFichaReturn {
       novaSecao.callout = { tipo: 'info', conteudo: '' };
     } else if (tipo === 'imagem') {
       novaSecao.imagem = { dataUrl: '', legenda: '' };
+    } else if (tipo === 'destaque') {
+      novaSecao.destaque = { conteudo: '' };
     }
 
     setFichaState((prev) => ({
@@ -112,6 +114,7 @@ export function useFicha(initialFicha?: Ficha): UseFichaReturn {
     else if (tipo === 'tabela') novaSecao.tabela = { headers: [], rows: [] };
     else if (tipo === 'callout') novaSecao.callout = { tipo: 'info', conteudo: '' };
     else if (tipo === 'imagem') novaSecao.imagem = { dataUrl: '', legenda: '' };
+    else if (tipo === 'destaque') novaSecao.destaque = { conteudo: '' };
 
     setFichaState((prev) => {
       const arr = [...prev.secoes];

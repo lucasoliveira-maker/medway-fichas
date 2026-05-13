@@ -103,6 +103,17 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
                 {secao.callout.conteudo}
               </CalloutBox>
             )}
+
+            {/* Box Destaque */}
+            {secao.tipo === 'destaque' && secao.destaque && (
+              <div
+                className="rounded-xl border-2 border-medway-primary bg-medway-primary/10 px-5 py-4
+                  text-medway-dark text-sm leading-relaxed
+                  [&_strong]:font-bold [&_em]:italic [&_u]:underline
+                  [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+                dangerouslySetInnerHTML={{ __html: secao.destaque.conteudo || '' }}
+              />
+            )}
           </div>
         ))}
       </div>

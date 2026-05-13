@@ -1,4 +1,4 @@
-export type SecaoTipo = 'h2' | 'h3' | 'paragrafo' | 'lista' | 'tabela' | 'imagem' | 'callout';
+export type SecaoTipo = 'h2' | 'h3' | 'paragrafo' | 'lista' | 'tabela' | 'imagem' | 'callout' | 'destaque';
 export type CalloutTipo = 'info' | 'aviso' | 'critico';
 export type FichaTipo = 'clinica' | 'teorica' | 'procedimento';
 
@@ -34,6 +34,11 @@ export interface Secao {
     tipo: CalloutTipo;
     titulo?: string;
     conteudo: string;
+  };
+
+  // Para box destaque
+  destaque?: {
+    conteudo: string; // HTML rico
   };
 }
 

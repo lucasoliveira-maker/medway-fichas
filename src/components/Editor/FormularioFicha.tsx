@@ -23,6 +23,7 @@ const TIPO_LABELS: Record<SecaoTipo, string> = {
   tabela: 'Tabela',
   imagem: 'Imagem',
   callout: 'Callout',
+  destaque: 'Box Destaque',
 };
 
 /** Separador entre seções com mini-menu para inserir nova seção naquele ponto */
@@ -182,6 +183,7 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
           <option value="tabela">Tabela</option>
           <option value="imagem">Imagem</option>
           <option value="callout">Callout</option>
+          <option value="destaque">Box Destaque</option>
         </select>
       </div>
 
@@ -371,6 +373,20 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
               placeholder="Conteúdo do callout"
             />
           </div>
+        </div>
+      )}
+
+      {secao.tipo === 'destaque' && (
+        <div>
+          <label className="text-sm font-semibold text-medway-dark block mb-1">
+            Conteúdo do Box
+          </label>
+          <RichTextEditor
+            value={secao.destaque?.conteudo || ''}
+            onChange={(html) => onUpdate({ destaque: { conteudo: html } })}
+            placeholder="Digite o texto do box destaque..."
+            minRows={3}
+          />
         </div>
       )}
 
