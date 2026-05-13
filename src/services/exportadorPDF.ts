@@ -6,13 +6,30 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      overflow: visible;
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
       font-size: 11px;
       color: #2C3E50;
-      background-color: #fff;
+      background: transparent;
       margin: 0;
       padding: 0;
+    }
+
+    /* Imagem de fundo: position:fixed repete em cada página impressa.
+       offset -15mm compensa as margens do @page para cobrir a folha A4 inteira. */
+    #bg-ficha {
+      display: block;
+      position: fixed;
+      top: -15mm;
+      left: -15mm;
+      width: 210mm;
+      height: 297mm;
+      z-index: -1;
+      object-fit: fill;
     }
 
     /* ── CABEÇALHO full-width ── */
@@ -273,18 +290,12 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
   `;
 
-  /* CSS de background injetado dinamicamente só quando há imagem */
-  const bgCSS = ficha.imagemFundo ? `
-    body {
-      background-image: url('${ficha.imagemFundo}');
-      background-size: 210mm 297mm;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-position: 0 0;
-      print-color-adjust: exact;
-      -webkit-print-color-adjust: exact;
-    }
-  ` : '';
+  /* Imagem de fundo: tag injetada no HTML (mais confiável que CSS background no print).
+     position:fixed repete em todas as páginas. offset de -15mm compensa as margens @page
+     para que a imagem cubra a folha A4 inteira (210×297mm) de borda a borda. */
+  const bgTag = ficha.imagemFundo
+    ? `<img id="bg-ficha" src="${ficha.imagemFundo}" />`
+    : '';
 
   const conteudoHTML = gerarHTMLFicha(ficha);
 
@@ -301,9 +312,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       <meta charset="UTF-8"/>
       <title>${ficha.titulo}</title>
       <style>${printStyles}</style>
-      ${bgCSS ? `<style>${bgCSS}</style>` : ''}
     </head>
     <body>
+      ${bgTag}
       ${conteudoHTML}
       <script>
         window.onload = function() {
