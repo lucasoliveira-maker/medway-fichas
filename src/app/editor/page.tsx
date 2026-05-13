@@ -38,14 +38,17 @@ function EditorConteudo() {
 
   // Carrega ficha existente do localStorage quando editar
   useEffect(() => {
-    if (isLoaded && fichaId && !fichaCarregada) {
+    if (isLoaded && fichaId) {
       const encontrada = savedFichas.find((f) => f.id === fichaId);
       if (encontrada) {
         setFicha(encontrada);
         setFichaCarregada(true);
       }
+    } else if (!fichaId) {
+      // Se não há fichaId na URL, reseta para nova ficha
+      setFichaCarregada(false);
     }
-  }, [isLoaded, fichaId, savedFichas, fichaCarregada, setFicha]);
+  }, [isLoaded, fichaId, savedFichas, setFicha]);
 
   useEffect(() => {
     setValidation(validarFichaMedway(ficha));
