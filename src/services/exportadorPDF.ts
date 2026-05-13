@@ -12,17 +12,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       color: #2C3E50;
       background: #fff;
       margin: 0;
-      padding: 0;
+      padding: 15mm 15mm 15mm 15mm;
       orphans: 3;
       widows: 3;
-    }
-
-
-    /* ── Wrapper com padding interno para respeitar margens ── */
-    .ficha-content-wrapper {
-      padding: 15mm;
-      width: 100%;
-      box-sizing: border-box;
     }
 
     /* ── CABEÇALHO full-width ── */
@@ -273,7 +265,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     @media print {
       body {
         margin: 0;
-        padding: 0;
+        padding: 15mm 15mm 15mm 15mm;
       }
     }
   `;
@@ -370,14 +362,12 @@ function gerarHTMLFicha(ficha: Ficha): string {
   if (dataCriado) metaPartes.push(`Criado em: ${dataCriado}`);
 
   return `
-    <div class="ficha-content-wrapper">
-      <div class="ficha-header">
-        <h1>${esc(ficha.titulo)}</h1>
-        ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
-      </div>
-      <div class="ficha-colunas">
-        ${secoes}
-      </div>
+    <div class="ficha-header">
+      <h1>${esc(ficha.titulo)}</h1>
+      ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
+    </div>
+    <div class="ficha-colunas">
+      ${secoes}
     </div>
   `;
 }
