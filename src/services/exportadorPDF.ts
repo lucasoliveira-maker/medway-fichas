@@ -6,10 +6,6 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      overflow: visible;
-    }
-
     body {
       font-family: 'Montserrat', sans-serif;
       font-size: 11px;
@@ -19,17 +15,17 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       padding: 0;
     }
 
-    /* Imagem de fundo: position:fixed repete em cada página impressa.
-       offset -15mm compensa as margens do @page para cobrir a folha A4 inteira. */
+    /* Imagem de fundo: position:fixed em paged media ancora ao canto físico da folha A4.
+       top:0 left:0 = canto superior esquerdo físico do papel.
+       Repete automaticamente em cada página impressa pelo browser. */
     #bg-ficha {
       display: block;
       position: fixed;
-      top: -15mm;
-      left: -15mm;
+      top: 0;
+      left: 0;
       width: 210mm;
       height: 297mm;
       z-index: -1;
-      object-fit: fill;
     }
 
     /* ── CABEÇALHO full-width ── */
