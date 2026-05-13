@@ -10,22 +10,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       font-family: 'Montserrat', sans-serif;
       font-size: 11px;
       color: #2C3E50;
-      background: #fff;
+      background-color: #fff;
       margin: 0;
       padding: 0;
-    }
-
-    /* Imagem de fundo — cobre a página inteira, fixa em cada página */
-    .bg-ficha {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      object-fit: cover;
-      print-color-adjust: exact;
-      -webkit-print-color-adjust: exact;
     }
 
     /* ── CABEÇALHO full-width ── */
@@ -286,6 +273,19 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
   `;
 
+  /* CSS de background injetado dinamicamente só quando há imagem */
+  const bgCSS = ficha.imagemFundo ? `
+    body {
+      background-image: url('${ficha.imagemFundo}');
+      background-size: 210mm 297mm;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: 0 0;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  ` : '';
+
   const conteudoHTML = gerarHTMLFicha(ficha);
 
   /* Abre janela no tamanho exato A4 a 96 DPI (794×1123px) para colunas calcularem corretamente */
@@ -301,6 +301,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       <meta charset="UTF-8"/>
       <title>${ficha.titulo}</title>
       <style>${printStyles}</style>
+      ${bgCSS ? `<style>${bgCSS}</style>` : ''}
     </head>
     <body>
       ${conteudoHTML}
@@ -379,12 +380,7 @@ function gerarHTMLFicha(ficha: Ficha): string {
   if (tipo) metaPartes.push(`Tipo: ${esc(tipo)}`);
   if (dataCriado) metaPartes.push(`Criado em: ${dataCriado}`);
 
-  const bgTag = ficha.imagemFundo
-    ? `<img class="bg-ficha" src="${ficha.imagemFundo}" alt="fundo" />`
-    : '';
-
   return `
-    ${bgTag}
     <div class="ficha-header">
       <h1>${esc(ficha.titulo)}</h1>
       ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
