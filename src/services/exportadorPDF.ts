@@ -330,11 +330,9 @@ function gerarHTMLFicha(ficha: Ficha): string {
     <div class="ficha-header">
       <h1>${esc(ficha.titulo)}</h1>
       ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
-      ${metaPartes.length ? `<div class="ficha-meta">${metaPartes.join(' | ')}</div>` : ''}
     </div>
     <div class="ficha-colunas">
       ${secoes}
-      <div class="ficha-footer">Medway Fichas &bull; Medway Design System v1.0 &bull; &copy; ${new Date().getFullYear()}</div>
     </div>
   `;
 }
