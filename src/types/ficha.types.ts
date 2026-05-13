@@ -1,4 +1,4 @@
-export type SecaoTipo = 'h2' | 'h3' | 'h4' | 'h5' | 'paragrafo' | 'lista' | 'tabela' | 'imagem' | 'callout' | 'destaque';
+export type SecaoTipo = 'h2' | 'h3' | 'h4' | 'h5' | 'paragrafo' | 'lista' | 'tabela' | 'imagem' | 'callout' | 'destaque' | 'fluxo';
 export type CalloutTipo = 'info' | 'aviso' | 'critico';
 export type FichaTipo = 'clinica' | 'teorica' | 'procedimento';
 

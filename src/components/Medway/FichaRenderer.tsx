@@ -118,6 +118,24 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
               </CalloutBox>
             )}
 
+            {/* Fluxos / tabelas / imagens grandes — largura total */}
+            {secao.tipo === 'fluxo' && secao.imagem && (
+              <figure className="w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={secao.imagem.dataUrl}
+                  alt={secao.imagem.legenda}
+                  className="w-full rounded border border-gray-200"
+                  style={{ display: 'block' }}
+                />
+                {secao.imagem.legenda && (
+                  <figcaption className="text-center text-xs text-medway-gray mt-2">
+                    {secao.imagem.legenda}
+                  </figcaption>
+                )}
+              </figure>
+            )}
+
             {/* Box Destaque */}
             {secao.tipo === 'destaque' && secao.destaque && (
               <div

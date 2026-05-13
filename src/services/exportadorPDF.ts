@@ -261,6 +261,27 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     }
     .box-destaque li { margin-bottom: 2px; }
 
+    /* Fluxo — largura total (sai das 2 colunas) */
+    .fluxo-section {
+      column-span: all;
+      width: 100%;
+      margin-bottom: 14px;
+      break-inside: avoid;
+    }
+    .fluxo-section img {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      display: block;
+    }
+    .fluxo-section figcaption {
+      text-align: center;
+      font-size: 10px;
+      color: #6B7684;
+      margin-top: 4px;
+    }
+
     .ficha-footer {
       column-span: all;
       font-size: 10px;
@@ -356,6 +377,10 @@ function gerarHTMLFicha(ficha: Ficha): string {
     }
     if (secao.tipo === 'imagem' && secao.imagem?.dataUrl) {
       return `<figure><img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}"/>
+        <figcaption>${esc(secao.imagem.legenda)}</figcaption></figure>`;
+    }
+    if (secao.tipo === 'fluxo' && secao.imagem?.dataUrl) {
+      return `<figure class="fluxo-section"><img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}"/>
         <figcaption>${esc(secao.imagem.legenda)}</figcaption></figure>`;
     }
     return '';
