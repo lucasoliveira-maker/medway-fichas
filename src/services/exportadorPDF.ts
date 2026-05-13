@@ -11,11 +11,18 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       font-size: 11px;
       color: #2C3E50;
       background: #fff;
-      padding: 32px 40px;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Container com padding interno ── */
+    .ficha-container {
+      padding: 0;
+      width: 100%;
     }
 
     /* ── CABEÇALHO full-width ── */
-    .ficha-header { width: 100%; margin-bottom: 16px; }
+    .ficha-header { width: 100%; margin-bottom: 16px; margin-top: 0; }
 
     .ficha-header h1 {
       font-size: 32px;
@@ -253,10 +260,8 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-top: 20px;
     }
 
-    /* margin:0 elimina o espaço onde o browser insere data/hora/título */
-    @page { margin: 0; size: A4 portrait; }
-    /* o padding do body substitui as margens da página */
-    @media print { body { padding: 12mm 15mm 6mm 15mm; } }
+    /* Margens fixas em todas as páginas: 15mm (1,5cm) em todos os lados */
+    @page { margin: 15mm; size: A4 portrait; }
   `;
 
   const conteudoHTML = gerarHTMLFicha(ficha);
