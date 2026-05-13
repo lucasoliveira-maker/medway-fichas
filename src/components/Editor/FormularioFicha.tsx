@@ -27,7 +27,7 @@ const TIPO_LABELS: Record<SecaoTipo, string> = {
 };
 
 /* Tipos visíveis no dropdown (removendo lista, tabela, callout) */
-const TIPOS_VISIVEIS = ['h2', 'h3', 'paragrafo', 'imagem', 'destaque'] as const;
+const TIPOS_VISIVEIS: SecaoTipo[] = ['h2', 'h3', 'paragrafo', 'imagem', 'destaque'];
 
 /** Separador entre seções com mini-menu para inserir nova seção naquele ponto */
 function InsertSeparator({ onInsert }: { onInsert: (tipo: SecaoTipo) => void }) {
@@ -70,7 +70,7 @@ function InsertSeparator({ onInsert }: { onInsert: (tipo: SecaoTipo) => void }) 
         <div className="absolute top-full left-1/2 -translate-x-1/2 z-20 mt-1
                         bg-white border border-gray-200 rounded-md shadow-medway-lg
                         min-w-[180px] py-1 text-sm">
-          {(TIPOS_VISIVEIS as SecaoTipo[]).map((tipo) => (
+          {TIPOS_VISIVEIS.map((tipo) => (
             <button
               key={tipo}
               type="button"
