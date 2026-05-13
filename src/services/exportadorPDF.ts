@@ -202,6 +202,8 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       -webkit-hyphens: auto;
       overflow-wrap: anywhere;
       word-break: break-word;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
     .box-destaque * {
       font-size: inherit !important;
