@@ -12,9 +12,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       color: #2C3E50;
       background: #fff;
       margin: 0;
-      padding: 15mm 15mm 15mm 15mm;
-      orphans: 3;
-      widows: 3;
+      padding: 0;
     }
 
     /* ── CABEÇALHO full-width ── */
@@ -48,6 +46,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       column-count: 2;
       column-gap: 1cm;
       column-rule: 1px solid #e5e5e5;
+      column-fill: auto;
       width: 100%;
       font-size: 11px;
     }
@@ -256,23 +255,20 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-top: 20px;
     }
 
-    /* Tamanho da página A4 */
+    /* @page define margens reais da página — aplica-se a TODAS as páginas do PDF */
     @page {
-      margin: 0;
       size: A4 portrait;
-    }
-
-    @media print {
-      body {
-        margin: 0;
-        padding: 15mm 15mm 15mm 15mm;
-      }
+      margin-top: 15mm;
+      margin-bottom: 15mm;
+      margin-left: 15mm;
+      margin-right: 15mm;
     }
   `;
 
   const conteudoHTML = gerarHTMLFicha(ficha);
 
-  const janela = window.open('', '_blank', 'width=900,height=700');
+  /* Abre janela no tamanho exato A4 a 96 DPI (794×1123px) para colunas calcularem corretamente */
+  const janela = window.open('', '_blank', 'width=794,height=1123');
   if (!janela) {
     throw new Error('Popup bloqueado. Permita popups para este site e tente novamente.');
   }
@@ -289,10 +285,11 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       ${conteudoHTML}
       <script>
         window.onload = function() {
+          /* 1500ms para garantir que a fonte Montserrat (Google Fonts) carregue */
           setTimeout(function() {
             window.print();
             window.close();
-          }, 800);
+          }, 1500);
         };
       <\/script>
     </body>
