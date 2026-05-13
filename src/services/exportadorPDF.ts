@@ -189,8 +189,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
 
     /* Box Destaque */
     .box-destaque {
-      background: #E6F7F4;
-      border: 2px solid #01CFAB;
+      background: #E8F0F8;
       border-radius: 10px;
       padding: 12px 16px;
       margin-bottom: 10px;
