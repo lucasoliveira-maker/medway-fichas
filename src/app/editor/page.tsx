@@ -52,19 +52,19 @@ function EditorConteudo() {
   }, [ficha]);
 
   const handleSave = () => {
-    const atualizado = {
+    // Se estamos em um curso, sempre passa o cursoId
+    const fichaComCurso = {
       ...ficha,
-      // preserva o cursoId existente ou adiciona o da URL
-      cursoId: ficha.cursoId ?? cursoId ?? undefined,
+      cursoId: cursoId || ficha.cursoId,
       validacao: { ...validation, validadoEm: new Date() },
       metadados: { ...ficha.metadados, atualizado: new Date() },
     };
     const lista = [...savedFichas];
     const idx = lista.findIndex((f) => f.id === ficha.id);
-    if (idx >= 0) lista[idx] = atualizado;
-    else lista.push(atualizado);
+    if (idx >= 0) lista[idx] = fichaComCurso;
+    else lista.push(fichaComCurso);
     setSavedFichas(lista);
-    setFicha(atualizado);
+    setFicha(fichaComCurso);
     alert('Ficha salva com sucesso!');
   };
 
