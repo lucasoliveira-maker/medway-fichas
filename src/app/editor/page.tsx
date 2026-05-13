@@ -25,6 +25,7 @@ export default function EditorPage() {
 function EditorConteudo() {
   const searchParams = useSearchParams();
   const fichaId = searchParams.get('id');
+  const cursoId = searchParams.get('curso');
 
   const { ficha, updateTitulo, updateSubtitulo, addSecao, addSecaoAt, updateSecao, removeSecao, setFicha } =
     useFicha();
@@ -53,6 +54,8 @@ function EditorConteudo() {
   const handleSave = () => {
     const atualizado = {
       ...ficha,
+      // preserva o cursoId existente ou adiciona o da URL
+      cursoId: ficha.cursoId ?? cursoId ?? undefined,
       validacao: { ...validation, validadoEm: new Date() },
       metadados: { ...ficha.metadados, atualizado: new Date() },
     };
@@ -113,10 +116,10 @@ function EditorConteudo() {
               {exporting ? '⏳...' : '📄 PDF'}
             </button>
             <a
-              href="/"
+              href={cursoId ? `/curso/${cursoId}` : '/'}
               className="text-white/80 hover:text-white py-2 px-3 text-sm transition"
             >
-              ← Dashboard
+              ← {cursoId ? 'Curso' : 'Cursos'}
             </a>
           </div>
         </div>

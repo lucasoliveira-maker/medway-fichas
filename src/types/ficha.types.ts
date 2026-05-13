@@ -39,6 +39,7 @@ export interface Secao {
 
 export interface Ficha {
   id: string;
+  cursoId?: string; // referência ao curso pai (opcional para compatibilidade)
   titulo: string;
   subtitulo?: string;
   dataFicha: Date;

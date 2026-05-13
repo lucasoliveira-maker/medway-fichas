@@ -1,145 +1,311 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { v4 as uuidv4 } from 'uuid';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Curso } from '@/types/curso.types';
 import { Ficha } from '@/types/ficha.types';
 
-export default function DashboardPage() {
-  const [fichas, setFichas, isLoaded] = useLocalStorage<Ficha[]>('fichas', []);
+const CORES = [
+  '#01CFAB', '#1862BC', '#00205B', '#28A745',
+  '#FF6B35', '#8B5CF6', '#EC4899', '#F59E0B', '#EF4444',
+];
 
-  const handleDelete = (id: string) => {
-    if (confirm('Tem certeza que deseja deletar esta ficha?')) {
-      setFichas(fichas.filter((f) => f.id !== id));
+const ICONES = ['📚', '🏥', '🧬', '💊', '🔬', '🩺', '🧠', '❤️', '🦷', '🎓', '📋', '⚕️'];
+
+const FORM_VAZIO = { nome: '', descricao: '', cor: CORES[0], icone: ICONES[0] };
+
+export default function CursosPage() {
+  const [cursos, setCursos, cursosLoaded] = useLocalStorage<Curso[]>('cursos', []);
+  const [fichas] = useLocalStorage<Ficha[]>('fichas', []);
+
+  const [showForm, setShowForm] = useState(false);
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [form, setForm] = useState(FORM_VAZIO);
+
+  if (!cursosLoaded) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-medway-light">
+        <p className="text-medway-gray font-montserrat">Carregando...</p>
+      </div>
+    );
+  }
+
+  const fichasSemCurso = fichas.filter((f) => !f.cursoId);
+
+  const fichasDoCurso = (cursoId: string) =>
+    fichas.filter((f) => f.cursoId === cursoId);
+
+  const handleSalvar = () => {
+    if (!form.nome.trim()) return;
+    const now = new Date();
+    if (editandoId) {
+      setCursos(cursos.map((c) =>
+        c.id === editandoId ? { ...c, ...form, atualizado: now } : c
+      ));
+      setEditandoId(null);
+    } else {
+      const novo: Curso = {
+        id: uuidv4(),
+        nome: form.nome.trim(),
+        descricao: form.descricao.trim() || undefined,
+        cor: form.cor,
+        icone: form.icone,
+        criado: now,
+        atualizado: now,
+      };
+      setCursos([...cursos, novo]);
+    }
+    setForm(FORM_VAZIO);
+    setShowForm(false);
+  };
+
+  const handleEditar = (curso: Curso) => {
+    setForm({
+      nome: curso.nome,
+      descricao: curso.descricao || '',
+      cor: curso.cor,
+      icone: curso.icone,
+    });
+    setEditandoId(curso.id);
+    setShowForm(true);
+  };
+
+  const handleDeletar = (id: string) => {
+    const total = fichasDoCurso(id).length;
+    const msg = total > 0
+      ? `Este curso tem ${total} ficha(s). Ao deletar o curso elas ficarão sem curso. Continuar?`
+      : 'Tem certeza que deseja deletar este curso?';
+    if (confirm(msg)) {
+      setCursos(cursos.filter((c) => c.id !== id));
     }
   };
 
-  const handleDuplicate = (ficha: Ficha) => {
-    const novaFicha = {
-      ...ficha,
-      id: Math.random().toString(),
-      titulo: `${ficha.titulo} (Cópia)`,
-      metadados: {
-        ...ficha.metadados,
-        criado: new Date(),
-        atualizado: new Date(),
-      },
-    };
-    setFichas([...fichas, novaFicha]);
-    alert('Ficha duplicada!');
+  const handleCancelar = () => {
+    setForm(FORM_VAZIO);
+    setEditandoId(null);
+    setShowForm(false);
   };
 
-  if (!isLoaded) {
-    return <div className="flex items-center justify-center h-screen">Carregando...</div>;
-  }
-
   return (
-    <div className="min-h-screen bg-medway-light">
+    <div className="min-h-screen bg-medway-light flex flex-col">
       {/* Header */}
       <header className="bg-medway-dark text-white px-6 py-6 shadow-medway">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Medway Fichas</h1>
-          <p className="text-medway-light text-lg">
-            Plataforma de geração de fichas de educação médica
-          </p>
+          <h1 className="text-3xl font-bold font-montserrat mb-1">Medway Fichas</h1>
+          <p className="text-white/70 text-sm">Plataforma de geração de fichas de educação médica</p>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        {/* CTA Button */}
-        <div className="mb-8">
-          <Link
-            href="/editor"
-            className="inline-block bg-medway-primary text-medway-dark font-bold py-3 px-8 rounded-sm hover:bg-opacity-90 shadow-medway transition"
-          >
-            ➕ Criar Nova Ficha
-          </Link>
+      <main className="max-w-7xl mx-auto w-full px-4 py-10 flex-1">
+
+        {/* Título + botão */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-medway-dark font-montserrat">Meus Cursos</h2>
+            <p className="text-medway-gray text-sm mt-1">
+              {cursos.length === 0
+                ? 'Nenhum curso criado ainda'
+                : `${cursos.length} curso${cursos.length > 1 ? 's' : ''}`}
+            </p>
+          </div>
+          {!showForm && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-medway-primary text-medway-dark font-bold py-2.5 px-6 rounded-sm hover:opacity-90 transition text-sm shadow-medway"
+            >
+              + Novo Curso
+            </button>
+          )}
         </div>
 
-        {/* Fichas Grid */}
-        {fichas.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-medway-gray text-lg mb-4">Nenhuma ficha criada ainda.</p>
-            <Link
-              href="/editor"
-              className="text-medway-primary font-semibold hover:underline"
+        {/* Formulário criar/editar curso */}
+        {showForm && (
+          <div className="bg-white rounded-md shadow-medway p-6 mb-8 border-l-4 border-medway-primary">
+            <h3 className="font-bold text-medway-dark mb-4 text-base">
+              {editandoId ? 'Editar Curso' : 'Novo Curso'}
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-semibold text-medway-dark mb-1">
+                  Nome do Curso *
+                </label>
+                <input
+                  type="text"
+                  value={form.nome}
+                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
+                  placeholder="Ex: Cardiologia, Clínica Médica..."
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-medway-dark mb-1">
+                  Descrição (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={form.descricao}
+                  onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
+                  placeholder="Breve descrição do curso"
+                />
+              </div>
+            </div>
+
+            {/* Ícone */}
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-medway-dark mb-2">Ícone</label>
+              <div className="flex flex-wrap gap-2">
+                {ICONES.map((icone) => (
+                  <button
+                    key={icone}
+                    type="button"
+                    onClick={() => setForm({ ...form, icone })}
+                    className={`w-9 h-9 text-lg rounded-sm border-2 transition ${
+                      form.icone === icone
+                        ? 'border-medway-primary bg-medway-primary/10'
+                        : 'border-gray-200 hover:border-medway-primary/50'
+                    }`}
+                  >
+                    {icone}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cor */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-medway-dark mb-2">Cor do Curso</label>
+              <div className="flex flex-wrap gap-2">
+                {CORES.map((cor) => (
+                  <button
+                    key={cor}
+                    type="button"
+                    onClick={() => setForm({ ...form, cor })}
+                    style={{ backgroundColor: cor }}
+                    className={`w-8 h-8 rounded-full border-4 transition ${
+                      form.cor === cor ? 'border-medway-dark scale-110' : 'border-transparent hover:scale-105'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleSalvar}
+                disabled={!form.nome.trim()}
+                className="bg-medway-primary text-medway-dark font-bold py-2 px-6 rounded-sm hover:opacity-90 disabled:opacity-40 transition text-sm"
+              >
+                {editandoId ? 'Salvar Alterações' : 'Criar Curso'}
+              </button>
+              <button
+                onClick={handleCancelar}
+                className="border border-gray-300 text-medway-gray py-2 px-4 rounded-sm hover:bg-gray-50 transition text-sm"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Grid de cursos */}
+        {cursos.length === 0 && !showForm ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">📚</div>
+            <p className="text-medway-gray text-lg mb-2">Nenhum curso criado ainda.</p>
+            <p className="text-medway-gray text-sm mb-6">Crie seu primeiro curso para organizar suas fichas.</p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-medway-primary text-medway-dark font-bold py-2.5 px-6 rounded-sm hover:opacity-90 transition text-sm"
             >
-              Crie a sua primeira ficha agora
-            </Link>
+              + Criar Primeiro Curso
+            </button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fichas.map((ficha) => (
-              <div
-                key={ficha.id}
-                className="bg-white rounded-sm shadow-medway p-6 hover:shadow-medway-lg transition"
-              >
-                {/* Título */}
-                <h2 className="text-xl font-bold text-medway-dark mb-2 truncate">
-                  {ficha.titulo}
-                </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {cursos.map((curso) => {
+              const totalFichas = fichasDoCurso(curso.id).length;
+              return (
+                <div
+                  key={curso.id}
+                  className="bg-white rounded-md shadow-medway hover:shadow-medway-lg transition-shadow overflow-hidden flex flex-col"
+                >
+                  {/* Barra de cor no topo */}
+                  <div className="h-2 w-full" style={{ backgroundColor: curso.cor }} />
 
-                {/* Subtítulo */}
-                {ficha.subtitulo && (
-                  <p className="text-medway-text text-sm mb-3 line-clamp-2">
-                    {ficha.subtitulo}
-                  </p>
-                )}
+                  <div className="p-5 flex flex-col flex-1">
+                    {/* Ícone + nome */}
+                    <div className="flex items-start gap-3 mb-3">
+                      <span className="text-3xl leading-none">{curso.icone}</span>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-medway-dark text-base font-montserrat truncate">
+                          {curso.nome}
+                        </h3>
+                        {curso.descricao && (
+                          <p className="text-medway-gray text-xs mt-0.5 line-clamp-2">
+                            {curso.descricao}
+                          </p>
+                        )}
+                      </div>
+                    </div>
 
-                {/* Metadata */}
-                <div className="text-xs text-medway-gray mb-4 space-y-1">
-                  <p>Tipo: <span className="font-semibold">{ficha.metadados.tipo}</span></p>
-                  <p>Criado: {new Date(ficha.metadados.criado).toLocaleDateString('pt-BR')}</p>
-                  <p>Seções: {ficha.secoes.length}</p>
+                    {/* Contador */}
+                    <div className="flex items-center gap-1.5 mb-4">
+                      <span
+                        className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                        style={{ backgroundColor: `${curso.cor}22`, color: curso.cor }}
+                      >
+                        {totalFichas} {totalFichas === 1 ? 'ficha' : 'fichas'}
+                      </span>
+                    </div>
+
+                    {/* Ações */}
+                    <div className="mt-auto space-y-2">
+                      <Link
+                        href={`/curso/${curso.id}`}
+                        className="block w-full text-center text-white font-semibold py-2 px-4 rounded-sm hover:opacity-90 transition text-sm"
+                        style={{ backgroundColor: curso.cor }}
+                      >
+                        Abrir Curso →
+                      </Link>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditar(curso)}
+                          className="flex-1 border border-gray-200 text-medway-gray py-1.5 rounded-sm text-xs hover:bg-gray-50 transition"
+                        >
+                          ✏️ Editar
+                        </button>
+                        <button
+                          onClick={() => handleDeletar(curso.id)}
+                          className="flex-1 border border-red-200 text-medway-error py-1.5 rounded-sm text-xs hover:bg-red-50 transition"
+                        >
+                          🗑️ Deletar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              );
+            })}
+          </div>
+        )}
 
-                {/* Status Validação */}
-                <div className="mb-4">
-                  {ficha.validacao.conformeMedway ? (
-                    <span className="inline-block bg-green-100 text-medway-success text-xs font-semibold px-3 py-1 rounded-full">
-                      ✅ Conforme
-                    </span>
-                  ) : (
-                    <span className="inline-block bg-red-100 text-medway-error text-xs font-semibold px-3 py-1 rounded-full">
-                      ❌ Revisar
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="space-y-2">
-                  <Link
-                    href={`/editor?id=${ficha.id}`}
-                    className="block w-full text-center bg-medway-primary text-medway-dark font-semibold py-2 px-4 rounded-sm hover:bg-opacity-90 transition text-sm"
-                  >
-                    ✏️ Editar
-                  </Link>
-                  <button
-                    onClick={() => handleDuplicate(ficha)}
-                    className="w-full border border-medway-primary text-medway-primary font-semibold py-2 px-4 rounded-sm hover:bg-medway-light transition text-sm"
-                  >
-                    📋 Duplicar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(ficha.id)}
-                    className="w-full text-medway-error border border-medway-error py-2 px-4 rounded-sm hover:bg-red-50 transition text-sm font-semibold"
-                  >
-                    🗑️ Deletar
-                  </button>
-                </div>
-              </div>
-            ))}
+        {/* Fichas sem curso (legado) */}
+        {fichasSemCurso.length > 0 && (
+          <div className="mt-10 p-4 bg-yellow-50 border border-yellow-200 rounded-sm text-sm text-yellow-800">
+            <span className="font-semibold">⚠️ {fichasSemCurso.length} ficha(s) sem curso</span>
+            {' — '}estas fichas foram criadas antes da organização por cursos e não pertencem a nenhum curso.
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="bg-medway-dark text-white px-6 py-6 mt-12">
-        <div className="max-w-7xl mx-auto text-center text-sm text-medway-light">
-          <p>
-            Medway Fichas • Plataforma de Educação Médica • © 2026 • Alinhado com Medway Design System v1.0
-          </p>
+      <footer className="bg-medway-dark text-white px-6 py-5">
+        <div className="max-w-7xl mx-auto text-center text-xs text-white/60">
+          Medway Fichas • Plataforma de Educação Médica • © {new Date().getFullYear()} • Medway Design System v1.0
         </div>
       </footer>
     </div>
