@@ -75,7 +75,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       color: #00205B;
       margin: 18px 0 10px;
       padding-bottom: 4px;
-      border-bottom: 2px solid #01CFAB;
+      border-bottom: 1px solid #e5e5e5;
     }
 
     /* H3 = subseção dentro das colunas */
