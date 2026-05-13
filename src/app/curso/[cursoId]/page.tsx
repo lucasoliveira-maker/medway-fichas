@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,6 +31,26 @@ function CursoFichasConteudo() {
   const handleDelete = (id: string) => {
     if (confirm('Tem certeza que deseja deletar esta ficha?')) {
       setFichas(fichas.filter((f) => f.id !== id));
+    }
+  };
+
+  const handleImagemFundo = (fichaId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setFichas(fichas.map((f) => f.id === fichaId ? { ...f, imagemFundo: base64 } : f));
+      alert('✅ Imagem de fundo definida!');
+    };
+    reader.readAsDataURL(file);
+    // Limpa o input para permitir selecionar o mesmo arquivo novamente
+    e.target.value = '';
+  };
+
+  const handleRemoverFundo = (fichaId: string) => {
+    if (confirm('Remover imagem de fundo desta ficha?')) {
+      setFichas(fichas.map((f) => f.id === fichaId ? { ...f, imagemFundo: undefined } : f));
     }
   };
 
@@ -181,6 +201,34 @@ function CursoFichasConteudo() {
                     >
                       📋 Duplicar
                     </button>
+
+                    {/* Imagem de fundo */}
+                    <label className="block w-full cursor-pointer">
+                      <span
+                        className={`flex items-center justify-center gap-2 w-full border py-2 px-4 rounded-sm transition text-sm font-semibold ${
+                          ficha.imagemFundo
+                            ? 'border-medway-primary text-medway-primary bg-teal-50 hover:bg-teal-100'
+                            : 'border-gray-200 text-medway-gray hover:bg-gray-50'
+                        }`}
+                      >
+                        🖼️ {ficha.imagemFundo ? 'Trocar fundo' : 'Imagem de fundo'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleImagemFundo(ficha.id, e)}
+                      />
+                    </label>
+                    {ficha.imagemFundo && (
+                      <button
+                        onClick={() => handleRemoverFundo(ficha.id)}
+                        className="w-full text-medway-gray border border-gray-200 py-1.5 px-4 rounded-sm hover:bg-gray-50 transition text-xs"
+                      >
+                        ✕ Remover fundo
+                      </button>
+                    )}
+
                     <button
                       onClick={() => handleDelete(ficha.id)}
                       className="w-full text-medway-error border border-red-200 py-2 px-4 rounded-sm hover:bg-red-50 transition text-sm font-semibold"

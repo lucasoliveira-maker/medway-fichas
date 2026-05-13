@@ -49,6 +49,7 @@ export interface Ficha {
   subtitulo?: string;
   dataFicha: Date;
   logoMedway: boolean;
+  imagemFundo?: string; // base64 da imagem de fundo do PDF (tamanho A4)
 
   secoes: Secao[];
 

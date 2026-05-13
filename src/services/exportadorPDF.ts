@@ -15,6 +15,19 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       padding: 0;
     }
 
+    /* Imagem de fundo — cobre a página inteira, fixa em cada página */
+    .bg-ficha {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      object-fit: cover;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
     /* ── CABEÇALHO full-width ── */
     .ficha-header { width: 100%; margin-bottom: 16px; margin-top: 0; }
 
@@ -366,7 +379,12 @@ function gerarHTMLFicha(ficha: Ficha): string {
   if (tipo) metaPartes.push(`Tipo: ${esc(tipo)}`);
   if (dataCriado) metaPartes.push(`Criado em: ${dataCriado}`);
 
+  const bgTag = ficha.imagemFundo
+    ? `<img class="bg-ficha" src="${ficha.imagemFundo}" alt="fundo" />`
+    : '';
+
   return `
+    ${bgTag}
     <div class="ficha-header">
       <h1>${esc(ficha.titulo)}</h1>
       ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
