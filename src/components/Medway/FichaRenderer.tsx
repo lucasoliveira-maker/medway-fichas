@@ -120,13 +120,13 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
 
             {/* Fluxos / tabelas / imagens grandes — largura total */}
             {secao.tipo === 'fluxo' && secao.imagem && (
-              <figure className="w-full">
+              <figure className="w-full flex flex-col items-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={secao.imagem.dataUrl}
                   alt={secao.imagem.legenda}
-                  className="w-full rounded border border-gray-200"
-                  style={{ display: 'block' }}
+                  className="rounded border border-gray-200"
+                  style={{ display: 'block', width: `${secao.imagem.largura ?? 100}%` }}
                 />
                 {secao.imagem.legenda && (
                   <figcaption className="text-center text-xs text-medway-gray mt-2">

@@ -380,8 +380,11 @@ function gerarHTMLFicha(ficha: Ficha): string {
         <figcaption>${esc(secao.imagem.legenda)}</figcaption></figure>`;
     }
     if (secao.tipo === 'fluxo' && secao.imagem?.dataUrl) {
-      return `<figure class="fluxo-section"><img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}"/>
-        <figcaption>${esc(secao.imagem.legenda)}</figcaption></figure>`;
+      const largura = secao.imagem.largura ?? 100;
+      return `<figure class="fluxo-section" style="text-align:center;">
+        <img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}" style="width:${largura}%;display:inline-block;"/>
+        <figcaption>${esc(secao.imagem.legenda)}</figcaption>
+      </figure>`;
     }
     return '';
   }).join('\n');
