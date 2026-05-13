@@ -120,7 +120,7 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
 
             {/* Fluxos / tabelas / imagens grandes — largura total */}
             {secao.tipo === 'fluxo' && secao.imagem && (
-              <figure className="w-full flex flex-col items-center">
+              <figure className="w-full flex flex-col items-center my-5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={secao.imagem.dataUrl}

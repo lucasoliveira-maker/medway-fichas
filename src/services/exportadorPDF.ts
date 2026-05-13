@@ -265,7 +265,8 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .fluxo-section {
       column-span: all;
       width: 100%;
-      margin-bottom: 14px;
+      margin-top: 18px;
+      margin-bottom: 18px;
       break-inside: avoid;
     }
     .fluxo-section img {
