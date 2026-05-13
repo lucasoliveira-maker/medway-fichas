@@ -43,7 +43,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     /* ── CONTEÚDO em 2 COLUNAS (estilo revista) ── */
     .ficha-colunas {
       column-count: 2;
-      column-gap: 20px;
+      column-gap: 1cm;
       column-rule: 1px solid #e5e5e5;
       width: 100%;
       font-size: 11px;
