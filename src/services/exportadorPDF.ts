@@ -13,12 +13,16 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       background: #fff;
       margin: 0;
       padding: 0;
+      orphans: 3;
+      widows: 3;
     }
 
-    /* ── Container com padding interno ── */
-    .ficha-container {
-      padding: 0;
+
+    /* ── Wrapper com padding interno para respeitar margens ── */
+    .ficha-content-wrapper {
+      padding: 15mm;
       width: 100%;
+      box-sizing: border-box;
     }
 
     /* ── CABEÇALHO full-width ── */
@@ -260,8 +264,18 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       margin-top: 20px;
     }
 
-    /* Margens fixas em todas as páginas: 15mm (1,5cm) em todos os lados */
-    @page { margin: 15mm; size: A4 portrait; }
+    /* Tamanho da página A4 */
+    @page {
+      margin: 0;
+      size: A4 portrait;
+    }
+
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    }
   `;
 
   const conteudoHTML = gerarHTMLFicha(ficha);
@@ -356,12 +370,14 @@ function gerarHTMLFicha(ficha: Ficha): string {
   if (dataCriado) metaPartes.push(`Criado em: ${dataCriado}`);
 
   return `
-    <div class="ficha-header">
-      <h1>${esc(ficha.titulo)}</h1>
-      ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
-    </div>
-    <div class="ficha-colunas">
-      ${secoes}
+    <div class="ficha-content-wrapper">
+      <div class="ficha-header">
+        <h1>${esc(ficha.titulo)}</h1>
+        ${ficha.subtitulo ? `<h2>${esc(ficha.subtitulo)}</h2>` : ''}
+      </div>
+      <div class="ficha-colunas">
+        ${secoes}
+      </div>
     </div>
   `;
 }
