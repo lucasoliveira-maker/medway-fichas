@@ -198,6 +198,9 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
       font-size: 11px;
       line-height: 1.55;
       color: #00205B;
+      text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
       overflow-wrap: anywhere;
       word-break: break-word;
     }
