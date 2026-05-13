@@ -26,6 +26,9 @@ const TIPO_LABELS: Record<SecaoTipo, string> = {
   destaque: 'Box Destaque',
 };
 
+/* Tipos visíveis no dropdown (removendo lista, tabela, callout) */
+const TIPOS_VISIVEIS = ['h2', 'h3', 'paragrafo', 'imagem', 'destaque'] as const;
+
 /** Separador entre seções com mini-menu para inserir nova seção naquele ponto */
 function InsertSeparator({ onInsert }: { onInsert: (tipo: SecaoTipo) => void }) {
   const [open, setOpen] = useState(false);
@@ -67,7 +70,7 @@ function InsertSeparator({ onInsert }: { onInsert: (tipo: SecaoTipo) => void }) 
         <div className="absolute top-full left-1/2 -translate-x-1/2 z-20 mt-1
                         bg-white border border-gray-200 rounded-md shadow-medway-lg
                         min-w-[180px] py-1 text-sm">
-          {(Object.keys(TIPO_LABELS) as SecaoTipo[]).map((tipo) => (
+          {(TIPOS_VISIVEIS as SecaoTipo[]).map((tipo) => (
             <button
               key={tipo}
               type="button"
@@ -179,10 +182,7 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
           <option value="h2">H2 - Seção Principal</option>
           <option value="h3">H3 - Subseção</option>
           <option value="paragrafo">Parágrafo</option>
-          <option value="lista">Lista</option>
-          <option value="tabela">Tabela</option>
           <option value="imagem">Imagem</option>
-          <option value="callout">Callout</option>
           <option value="destaque">Box Destaque</option>
         </select>
       </div>
@@ -213,21 +213,6 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
             onChange={(html) => onUpdate({ conteudo: html })}
             placeholder="Digite o parágrafo..."
             minRows={4}
-          />
-        </div>
-      )}
-
-      {secao.tipo === 'lista' && (
-        <div>
-          <label className="text-sm font-semibold text-medway-dark block mb-1">
-            Itens (um por linha)
-          </label>
-          <textarea
-            value={secao.itens?.join('\n') || ''}
-            onChange={(e) => onUpdate({ itens: e.target.value.split('\n').filter(Boolean) })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
-            rows={3}
-            placeholder="Item 1&#10;Item 2&#10;Item 3"
           />
         </div>
       )}
@@ -304,73 +289,6 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
               placeholder="Descrição ou legenda da imagem"
-            />
-          </div>
-        </div>
-      )}
-
-      {secao.tipo === 'callout' && (
-        <div className="space-y-2">
-          <div>
-            <label className="text-sm font-semibold text-medway-dark block mb-1">
-              Tipo de Callout
-            </label>
-            <select
-              value={secao.callout?.tipo || 'info'}
-              onChange={(e) =>
-                onUpdate({
-                  callout: {
-                    tipo: e.target.value as any,
-                    titulo: secao.callout?.titulo,
-                    conteudo: secao.callout?.conteudo || '',
-                  },
-                })
-              }
-              className="w-full px-3 py-1 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
-            >
-              <option value="info">Info</option>
-              <option value="aviso">Aviso</option>
-              <option value="critico">Crítico</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-medway-dark block mb-1">
-              Título (opcional)
-            </label>
-            <input
-              type="text"
-              value={secao.callout?.titulo || ''}
-              onChange={(e) =>
-                onUpdate({
-                  callout: {
-                    tipo: secao.callout?.tipo || 'info',
-                    titulo: e.target.value,
-                    conteudo: secao.callout?.conteudo || '',
-                  },
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
-              placeholder="Título"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-medway-dark block mb-1">
-              Conteúdo
-            </label>
-            <textarea
-              value={secao.callout?.conteudo || ''}
-              onChange={(e) =>
-                onUpdate({
-                  callout: {
-                    tipo: secao.callout?.tipo || 'info',
-                    titulo: secao.callout?.titulo,
-                    conteudo: e.target.value,
-                  },
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-medway-primary"
-              rows={2}
-              placeholder="Conteúdo do callout"
             />
           </div>
         </div>
