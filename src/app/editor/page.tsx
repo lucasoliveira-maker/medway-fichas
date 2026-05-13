@@ -36,9 +36,9 @@ function EditorConteudo() {
   const [exporting, setExporting] = useState(false);
   const [fichaCarregada, setFichaCarregada] = useState(false);
 
-  // Carrega ficha existente do localStorage quando editar
+  // Carrega ficha existente do localStorage quando editar (apenas uma vez por fichaId)
   useEffect(() => {
-    if (isLoaded && fichaId) {
+    if (isLoaded && fichaId && !fichaCarregada) {
       const encontrada = savedFichas.find((f) => f.id === fichaId);
       if (encontrada) {
         setFicha(encontrada);
@@ -48,7 +48,7 @@ function EditorConteudo() {
       // Se não há fichaId na URL, reseta para nova ficha
       setFichaCarregada(false);
     }
-  }, [isLoaded, fichaId, savedFichas, setFicha]);
+  }, [isLoaded, fichaId]);
 
   useEffect(() => {
     setValidation(validarFichaMedway(ficha));
