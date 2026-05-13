@@ -10,7 +10,7 @@ export function Heading({ level, children, className = '' }: HeadingProps) {
   const levelClasses = {
     1: 'text-h1 text-medway-dark',
     2: 'text-h2 text-medway-dark',
-    3: 'text-h3 text-medway-secondary',
+    3: 'text-h3 text-[#407ec9]',
   };
 
   const Tag = `h${level}` as const;

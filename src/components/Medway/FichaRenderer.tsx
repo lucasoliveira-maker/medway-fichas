@@ -63,14 +63,14 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
 
             {/* H4 */}
             {secao.tipo === 'h4' && (
-              <h4 className="mt-5 mb-2 text-lg font-bold text-medway-secondary">
+              <h4 className="mt-5 mb-2 text-lg font-bold text-[#407ec9]">
                 {secao.titulo}
               </h4>
             )}
 
             {/* H5 */}
             {secao.tipo === 'h5' && (
-              <h5 className="mt-4 mb-2 text-base font-bold text-medway-secondary">
+              <h5 className="mt-4 mb-2 text-base font-bold text-[#407ec9]">
                 {secao.titulo}
               </h5>
             )}

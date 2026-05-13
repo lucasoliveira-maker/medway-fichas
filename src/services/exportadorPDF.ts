@@ -82,7 +82,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .ficha-colunas h3 {
       font-size: 14px;
       font-weight: 700;
-      color: #1862BC;
+      color: #407ec9;
       margin: 12px 0 6px;
       break-after: avoid;
     }
@@ -91,7 +91,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .ficha-colunas h4 {
       font-size: 12px;
       font-weight: 700;
-      color: #1862BC;
+      color: #407ec9;
       margin: 10px 0 5px;
       break-after: avoid;
     }
@@ -100,7 +100,7 @@ export async function exportarFichaPDF(ficha: Ficha, element: HTMLElement): Prom
     .ficha-colunas h5 {
       font-size: 11px;
       font-weight: 700;
-      color: #1862BC;
+      color: #407ec9;
       margin: 8px 0 4px;
       break-after: avoid;
     }
