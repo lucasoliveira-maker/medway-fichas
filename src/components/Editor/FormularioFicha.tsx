@@ -236,7 +236,7 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
               />
               <button
                 type="button"
-                onClick={() => onUpdate({ imagem: { dataUrl: '', legenda: secao.imagem?.legenda || '' } })}
+                onClick={() => onUpdate({ imagem: { dataUrl: '', legenda: secao.imagem?.legenda || '', largura: secao.imagem?.largura } })}
                 className="absolute top-1 right-1 bg-white border border-gray-300 rounded-full w-6 h-6 text-xs text-medway-error hover:bg-red-50 transition flex items-center justify-center"
                 title="Remover imagem"
               >
@@ -269,12 +269,45 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
                       imagem: {
                         dataUrl: reader.result as string,
                         legenda: secao.imagem?.legenda || '',
+                        largura: secao.imagem?.largura,
                       },
                     });
                   reader.readAsDataURL(file);
                 }}
               />
             </label>
+          </div>
+
+          {/* Tamanho no PDF */}
+          <div>
+            <label className="text-sm font-semibold text-medway-dark block mb-1">
+              Tamanho no PDF:{' '}
+              <span className="text-medway-primary font-bold">
+                {secao.imagem?.largura ?? 100}%
+              </span>
+            </label>
+            <input
+              type="range"
+              min={20}
+              max={100}
+              step={5}
+              value={secao.imagem?.largura ?? 100}
+              onChange={(e) =>
+                onUpdate({
+                  imagem: {
+                    dataUrl: secao.imagem?.dataUrl || '',
+                    legenda: secao.imagem?.legenda || '',
+                    largura: Number(e.target.value),
+                  },
+                })
+              }
+              className="w-full accent-medway-primary"
+            />
+            <div className="flex justify-between text-xs text-medway-gray mt-0.5">
+              <span>20%</span>
+              <span>60%</span>
+              <span>100%</span>
+            </div>
           </div>
 
           {/* Legenda */}
@@ -290,6 +323,7 @@ function SecaoInput({ secao, onUpdate, onRemove }: SecaoInputProps) {
                   imagem: {
                     dataUrl: secao.imagem?.dataUrl || '',
                     legenda: e.target.value,
+                    largura: secao.imagem?.largura,
                   },
                 })
               }

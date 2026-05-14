@@ -101,11 +101,20 @@ export function FichaRenderer({ ficha, preview = false, className = '' }: FichaR
 
             {/* Imagem */}
             {secao.tipo === 'imagem' && secao.imagem && (
-              <ImageCaption
-                src={secao.imagem.dataUrl}
-                alt={secao.imagem.legenda}
-                legenda={secao.imagem.legenda}
-              />
+              <figure className="text-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={secao.imagem.dataUrl}
+                  alt={secao.imagem.legenda}
+                  style={{ width: `${secao.imagem.largura ?? 100}%`, height: 'auto' }}
+                  className="rounded-sm border border-gray-300 mx-auto"
+                />
+                {secao.imagem.legenda && (
+                  <figcaption className="text-sm text-medway-gray mt-3 font-montserrat">
+                    {secao.imagem.legenda}
+                  </figcaption>
+                )}
+              </figure>
             )}
 
             {/* Callout */}

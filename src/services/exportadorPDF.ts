@@ -377,7 +377,8 @@ function gerarHTMLFicha(ficha: Ficha): string {
       return `<div class="box-destaque">${stripFontSize(secao.destaque.conteudo || '')}</div>`;
     }
     if (secao.tipo === 'imagem' && secao.imagem?.dataUrl) {
-      return `<figure><img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}"/>
+      const w = secao.imagem.largura ?? 100;
+      return `<figure style="text-align:center"><img src="${secao.imagem.dataUrl}" alt="${esc(secao.imagem.legenda)}" style="width:${w}%;max-width:100%;height:auto"/>
         <figcaption>${esc(secao.imagem.legenda)}</figcaption></figure>`;
     }
     if (secao.tipo === 'fluxo' && secao.imagem?.dataUrl) {
