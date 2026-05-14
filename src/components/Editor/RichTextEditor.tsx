@@ -279,15 +279,6 @@ export function RichTextEditor({
 
         <Divider />
 
-        <Btn title="Inserir link" onClick={handleLink}>
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
-            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
-          </svg>
-        </Btn>
-
-        <Divider />
-
         <Btn title="Lista com marcadores" onClick={() => exec('insertUnorderedList')}>
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <rect x="9" y="5" width="12" height="2" rx="1"/>
@@ -310,37 +301,6 @@ export function RichTextEditor({
         </Btn>
 
         <Divider />
-
-        <Btn title="Alinhar à esquerda" onClick={() => exec('justifyLeft')}>
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="3" y="5" width="18" height="2" rx="1"/>
-            <rect x="3" y="9" width="12" height="2" rx="1"/>
-            <rect x="3" y="13" width="18" height="2" rx="1"/>
-            <rect x="3" y="17" width="12" height="2" rx="1"/>
-          </svg>
-        </Btn>
-        <Btn title="Centralizar" onClick={() => exec('justifyCenter')}>
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="3" y="5" width="18" height="2" rx="1"/>
-            <rect x="6" y="9" width="12" height="2" rx="1"/>
-            <rect x="3" y="13" width="18" height="2" rx="1"/>
-            <rect x="6" y="17" width="12" height="2" rx="1"/>
-          </svg>
-        </Btn>
-        <Btn title="Alinhar à direita" onClick={() => exec('justifyRight')}>
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="3" y="5" width="18" height="2" rx="1"/>
-            <rect x="9" y="9" width="12" height="2" rx="1"/>
-            <rect x="3" y="13" width="18" height="2" rx="1"/>
-            <rect x="9" y="17" width="12" height="2" rx="1"/>
-          </svg>
-        </Btn>
-
-        <Divider />
-
-        <Btn title="Código inline" onClick={handleCode}>
-          <span className="text-xs font-mono leading-none">&lt;/&gt;</span>
-        </Btn>
 
         <Btn title="Inserir emoji" onClick={handleEmoji}>
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
