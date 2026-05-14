@@ -266,8 +266,8 @@ export default function CursosPage() {
                     <div className="mt-auto space-y-2">
                       <Link
                         href={`/curso/${curso.id}`}
-                        className="block w-full text-center text-white font-semibold py-2 px-4 rounded-sm hover:opacity-90 transition text-sm"
-                        style={{ backgroundColor: curso.cor }}
+                        className="block w-full text-center font-semibold py-2 px-4 rounded-sm hover:opacity-90 transition text-sm"
+                        style={{ backgroundColor: curso.cor, color: '#ffffff' }}
                       >
                         Abrir Curso →
                       </Link>
