@@ -12,6 +12,22 @@ interface RichTextEditorProps {
 
 const MAX_INDENT_PX = 140; // 100% da régua = 140 px de recuo
 
+/* ── Lista de emojis agrupados ── */
+const EMOJI_LIST = [
+  '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇',
+  '🙂','😉','😌','😍','🥰','😘','😋','😜','🤔','😐',
+  '😏','😒','🙄','😬','😔','😪','🥱','😷','🤒','🤕',
+  '👍','👎','👌','✌️','🤞','🤙','👋','🤝','👏','🙌',
+  '💪','☝️','👆','👇','👉','👈','🖐️','✋','🤲','🙏',
+  '❤️','🧡','💛','💚','💙','💜','🖤','💔','❣️','💕',
+  '✅','❌','⚠️','❗','❓','💡','⭐','🌟','✨','🔥',
+  '💥','🎯','🏆','🎉','🎈','📌','📍','🔑','🔒','💯',
+  '📊','📈','📉','➡️','⬅️','⬆️','⬇️','🔄','↩️','↪️',
+  '📝','📖','📚','✏️','📋','💼','🎓','🔬','🧬','🧪',
+  '🏥','💊','💉','🩺','🩻','🩹','🌡️','⚕️','👨‍⚕️','👩‍⚕️',
+  '1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟',
+];
+
 export function RichTextEditor({
   value,
   onChange,
@@ -26,6 +42,28 @@ export function RichTextEditor({
     leftIndent: 0,
     firstLine: 0,
   });
+
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [emojiPos, setEmojiPos] = useState({ top: 0, left: 0 });
+  const emojiBtnRef = useRef<HTMLButtonElement>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  /* ─────────────────────────────────────────────────────────────────
+     Fecha picker de emoji ao clicar fora
+  ───────────────────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (!emojiOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        !emojiPickerRef.current?.contains(e.target as Node) &&
+        !emojiBtnRef.current?.contains(e.target as Node)
+      ) {
+        setEmojiOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [emojiOpen]);
 
   /* ─────────────────────────────────────────────────────────────────
      Sync external value → DOM  (só quando vem de fora, e.g. load)
@@ -220,13 +258,18 @@ export function RichTextEditor({
   }, [emit]);
 
   /* ─────────────────────────────────────────────────────────────────
-     Emoji
+     Emoji picker
   ───────────────────────────────────────────────────────────────── */
-  const handleEmoji = useCallback(() => {
-    editorRef.current?.focus();
-    const emoji = window.prompt('Cole ou digita um emoji:', '');
-    if (emoji) exec('insertText', emoji);
-  }, [exec]);
+  const toggleEmojiPicker = useCallback(() => {
+    if (!emojiOpen && emojiBtnRef.current) {
+      const rect = emojiBtnRef.current.getBoundingClientRect();
+      setEmojiPos({
+        top: rect.bottom + 4,
+        left: Math.min(rect.left, window.innerWidth - 272),
+      });
+    }
+    setEmojiOpen((v) => !v);
+  }, [emojiOpen]);
 
   /* ─────────────────────────────────────────────────────────────────
      Render
@@ -302,15 +345,51 @@ export function RichTextEditor({
 
         <Divider />
 
-        <Btn title="Inserir emoji" onClick={handleEmoji}>
+        {/* Botão emoji com ref própria para calcular posição do picker */}
+        <button
+          ref={emojiBtnRef}
+          type="button"
+          title="Inserir emoji"
+          onMouseDown={(e) => { e.preventDefault(); toggleEmojiPicker(); }}
+          className="p-1.5 rounded text-medway-dark hover:bg-gray-200 active:bg-gray-300 transition select-none"
+        >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
             <line x1="9" y1="9" x2="9.01" y2="9"/>
             <line x1="15" y1="9" x2="15.01" y2="9"/>
           </svg>
-        </Btn>
+        </button>
       </div>
+
+      {/* ── Picker de emoji (fixed → escapa do overflow-hidden) ── */}
+      {emojiOpen && (
+        <div
+          ref={emojiPickerRef}
+          style={{ position: 'fixed', top: emojiPos.top, left: emojiPos.left, zIndex: 9999 }}
+          className="bg-white border border-gray-200 rounded-md shadow-lg p-2 w-64"
+        >
+          <div className="grid grid-cols-10 gap-px max-h-52 overflow-y-auto">
+            {EMOJI_LIST.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  editorRef.current?.focus();
+                  document.execCommand('insertText', false, emoji);
+                  emit();
+                  setEmojiOpen(false);
+                }}
+                className="text-base p-1 hover:bg-gray-100 rounded cursor-pointer leading-none"
+                title={emoji}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Régua ── */}
       <RulerBar markers={indentMarkers} onChange={handleRulerChange} />
