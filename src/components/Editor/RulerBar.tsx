@@ -18,6 +18,18 @@ const TOTAL_UNITS = 18;
 const H = 30; // ruler height px
 const MAX_FRACTION = 0.75; // block no máximo 75% da largura
 
+/* ── Pontos fixos de encaixe (em unidades da régua) ── */
+const SNAP_UNITS = [0, 1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12, 13.5];
+const SNAP_FRACS = SNAP_UNITS.map((u) => u / TOTAL_UNITS);
+
+/** Encaixa `raw` no ponto fixo mais próximo */
+function snapNearest(raw: number): number {
+  return SNAP_FRACS.reduce((best, s) =>
+    Math.abs(raw - s) < Math.abs(raw - best) ? s : best,
+    SNAP_FRACS[0],
+  );
+}
+
 export function RulerBar({ markers, onChange }: RulerBarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(500);
@@ -43,10 +55,9 @@ export function RulerBar({ markers, onChange }: RulerBarProps) {
 
       const onMove = (ev: MouseEvent) => {
         const delta = (ev.clientX - startX) / W;
-        const raw = startVal + delta;
-        // leftIndent: 0..MAX  |  firstLine: pode ir até o mesmo MAX
-        const clamped = Math.max(0, Math.min(MAX_FRACTION, raw));
-        onChange({ ...markers, [key]: clamped });
+        const raw = Math.max(0, Math.min(MAX_FRACTION, startVal + delta));
+        const snapped = snapNearest(raw);
+        onChange({ ...markers, [key]: snapped });
       };
       const onUp = () => {
         window.removeEventListener('mousemove', onMove);
@@ -115,6 +126,26 @@ export function RulerBar({ markers, onChange }: RulerBarProps) {
 
         {/* linhas de escala + números */}
         {ticks}
+
+        {/* ── Pontos fixos de encaixe ── */}
+        {SNAP_FRACS.map((f, i) => {
+          const x = f * W;
+          return (
+            <g key={`snap${i}`}>
+              {/* linha vertical tracejada suave */}
+              <line
+                x1={x} y1={13}
+                x2={x} y2={21}
+                stroke="#01CFAB"
+                strokeWidth={1}
+                strokeDasharray="2,1"
+                opacity={0.45}
+              />
+              {/* ponto central */}
+              <circle cx={x} cy={17} r={1.8} fill="#01CFAB" opacity={0.55} />
+            </g>
+          );
+        })}
 
         {/* ── Marcador primeira linha ▼ (topo, aponta para baixo) ── */}
         <g
