@@ -19,7 +19,7 @@ const H = 30; // ruler height px
 const MAX_FRACTION = 0.75; // block no máximo 75% da largura
 
 /* ── Pontos fixos de encaixe (em unidades da régua) ── */
-const SNAP_UNITS = [0, 1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12, 13.5];
+const SNAP_UNITS = [0, 3, 6, 9, 12];
 const SNAP_FRACS = SNAP_UNITS.map((u) => u / TOTAL_UNITS);
 
 /** Encaixa `raw` no ponto fixo mais próximo */
