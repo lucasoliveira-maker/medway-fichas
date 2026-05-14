@@ -93,8 +93,8 @@ function CursoFichasConteudo() {
           </div>
           <Link
             href={`/editor?curso=${cursoId}`}
-            className="text-medway-dark font-bold py-2 px-5 rounded-sm hover:opacity-90 transition text-sm"
-            style={{ backgroundColor: corCurso }}
+            className="font-bold py-2 px-5 rounded-sm hover:opacity-90 transition text-sm"
+            style={{ backgroundColor: corCurso, color: '#ffffff' }}
           >
             + Nova Ficha
           </Link>
@@ -170,8 +170,8 @@ function CursoFichasConteudo() {
                   <div className="mt-auto space-y-2">
                     <Link
                       href={`/editor?id=${ficha.id}&curso=${cursoId}`}
-                      className="block w-full text-center text-medway-dark font-semibold py-2 px-4 rounded-sm hover:opacity-90 transition text-sm"
-                      style={{ backgroundColor: corCurso }}
+                      className="block w-full text-center font-semibold py-2 px-4 rounded-sm hover:opacity-90 transition text-sm"
+                      style={{ backgroundColor: corCurso, color: '#ffffff' }}
                     >
                       ✏️ Editar
                     </Link>
